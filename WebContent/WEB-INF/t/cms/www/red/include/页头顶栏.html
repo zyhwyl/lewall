@@ -1,0 +1,43 @@
+<script type="text/javascript" src="http://qzonestyle.gtimg.cn/qzone/openapi/qc_loader.js" data-appid="100361173" data-redirecturi="http://www.lwall.net/connect/qq/callback.jspx" charset="utf-8"></script> 
+<link id="artDialog-skin" href="${base}/thirdparty/skins/default.css" rel="stylesheet" />
+<script src="${base}/thirdparty/source/artDialog.js" type="text/javascript"></script> 
+
+<div class="activity_head">
+	<div class="logo" onclick="location='${base}/'"></div>
+	<div class="now_site_block">
+		<span class="province" style="margin-top:0;">[贵阳市]</span>
+		<span class="school">贵州大学 花溪区</span>
+		<span>切换学校</span>
+		[#if user??]
+			<a href="${base}/activity/save.jspx?cityid=4" class="pubhref">我来发起！</a>
+		[#else]
+			<span id="qqLoginBtn" class="qq_login" style="margin-top:-20px;"></span>
+			<script type="text/javascript">
+			    QC.Login({
+			       btnId:"qqLoginBtn"	//插入按钮的节点id 
+			});
+			</script>
+			<!--<a href="${base}/connect/qq/login" class="qq_login" title="使用qq登录"></a>-->
+		[/#if]
+	</div>
+	<div class="user_status">
+		[#if user??]
+			[#if user.userExt.userImg??]
+				<img src="${base}${user.getUserCornerImg()!}" onerror="this.src='/${res}/images/user_pic/user_pic_big.gif'" width="48" height="48" />
+			[#else]
+				<img src="/${res}/images/user_pic/user_pic_big.gif" />
+			[/#if]
+			<span><a href="${base}/member/index.jspx">${user.username}</a>&nbsp;&nbsp;${user.group.name!}&nbsp;<a href="${base}/logout.jspx?returnUrl=/" style="font-weight:bold;">退出</a></span>
+		[#else]
+			<span><a href="${base}/login.jspx">登录</a>&nbsp;&nbsp;没有账号？点击<a href="${base}/register.jspx">注册</a></span>
+		[/#if]
+	</div>
+	<div class="header-box-pastbtn">
+		<a class="sy-btn1" title="返回首页" href="${base}/"></a>
+		[#if user??]
+			<a class="sy-btn3" title="信息设置" href="${base}/member/profile.jspx"></a>
+			<a class="sy-btn4" title="个人中心" href="${base}/member/index.jspx"></a>
+			<a class="sy-btn5" title="退出登录" href="logout.jspx?returnUrl=/"></a>
+		[/#if]
+	</div>
+</div>

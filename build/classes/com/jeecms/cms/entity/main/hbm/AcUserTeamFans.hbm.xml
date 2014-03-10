@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="AcUserTeamFans"
+		table="ac_user_team_fans"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="string"
+			column="acf_id"
+		>
+			<generator class="assigned"/>
+		</id>
+
+		<property
+			name="AcfTeamid"
+			column="acf_teamid"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="AcfUserid"
+			column="acf_userid"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="AcfUsername"
+			column="acf_username"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+		<property
+			name="AcfUserimg"
+			column="acf_userimg"
+			type="string"
+			not-null="false"
+			length="200"
+		/>
+		<property
+			name="AcfDate"
+			column="acf_date"
+			type="timestamp"
+			not-null="false"
+			length="200"
+		/>
+
+
+	</class>	
+</hibernate-mapping>

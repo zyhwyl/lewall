@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="ActivityComment"
+		table="activity_comment"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="string"
+			column="acm_id"
+		>
+			<generator class="assigned"/>
+		</id>
+
+		<property
+			name="AcmAcid"
+			column="acm_acid"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="AcmUserid"
+			column="acm_userid"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="AcmText"
+			column="acm_text"
+			type="string"
+			not-null="false"
+			length="1000"
+		/>
+		<property
+			name="AcmCreatetime"
+			column="acm_createtime"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+		<property
+			name="AcmToUser"
+			column="acm_to_user"
+			type="integer"
+			not-null="false"
+			length="11"
+		/>
+		<property
+			name="AcmUsername"
+			column="acm_username"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+		<property
+			name="AcmUserimg"
+			column="acm_userimg"
+			type="string"
+			not-null="false"
+			length="200"
+		/>
+
+	</class>	
+</hibernate-mapping>

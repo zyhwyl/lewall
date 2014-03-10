@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="ActivityDistrick"
+		table="activity_districk"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="integer"
+			column="districk_id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="DistrickName"
+			column="districk_name"
+			type="string"
+			not-null="false"
+			length="60"
+		/>
+		<many-to-one
+			name="City"
+			column="city_id"
+			class="ActivityCity"
+			not-null="false"
+		>
+		</many-to-one>
+	
+
+		<list name="ActivitySchools" inverse="true" >
+			<key column="districk_id"/>
+			<list-index column="sc_id" base="1"></list-index>
+			<one-to-many class="ActivitySchool"/>
+		</list>
+
+
+	</class>	
+</hibernate-mapping>

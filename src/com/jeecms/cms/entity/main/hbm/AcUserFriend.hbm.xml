@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="AcUserFriend"
+		table="ac_user_friend"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="string"
+			column="auf_id"
+		>
+			<generator class="assigned"/>
+		</id>
+
+		<property
+			name="AufApplyuser"
+			column="auf_applyuser"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="AufReceiveuser"
+			column="auf_receiveuser"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="AufCreatetime"
+			column="auf_createtime"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+		<property
+			name="AufState"
+			column="auf_state"
+			type="integer"
+			not-null="false"
+			length="3"
+		/>
+		<property
+			name="AufAccepttime"
+			column="auf_accepttime"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+
+
+	</class>	
+</hibernate-mapping>

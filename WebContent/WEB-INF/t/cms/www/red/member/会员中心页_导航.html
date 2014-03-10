@@ -1,0 +1,127 @@
+<script>
+$(function(){
+	//文本框可输入的字数
+	var areatextLength=140;
+	 
+	//验证文本框中的字数
+	 $("textarea").keydown(function(){
+		 if($(this).text().length>areatextLength){
+			 $(this).text($(this).text().slice(0,areatextLength));
+			 $(this).siblings("b").css("color","red");
+		 }else{
+			 $(this).siblings("b").css("color","green");
+		 }
+		 $(this).siblings("b").html("还能输"+(areatextLength-$(this).text().length)+"个字");
+	 }).keyup(function(){
+		 if($(this).text().length>areatextLength){
+			 $(this).text($(this).text().slice(0,areatextLength));
+			 $(this).siblings("b").css("color","red");
+		 }else{
+			 $(this).siblings("b").css("color","green");
+		 }
+		 $(this).siblings("b").html("还能输"+(areatextLength-$(this).text().length)+"个字");
+	 });
+	 $("textarea").focus(function(){
+		 if($(this).val()=="说点什么.."){
+			$(this).val("");
+		 } 
+	 });
+	 $(".img_wrap").mouseover(function(){
+		 $(this).children(".person_space_btn_float").show();
+	 }).mouseout(function(){
+		 $(this).children(".person_space_btn_float").hide();
+	 });
+	 //发布说说
+	 $(".say_btn").click(function(){
+		 if($(".text_area").val()=="说点什么.."){
+			 alert("请输入内容！");
+			 return;
+		 }
+		 $.post("${base}/member/usersay.jspx",{"content":$(".text_area").val()},function(data){
+			 if(data==0){
+				 alert("你还没登陆，或者登录过期了！！");
+				 location.reload();
+			 }else if(data==1){
+				 alert("发布成功!");
+				 location.reload();
+			 }else{
+				 alert("error：程序异常");
+			 }
+		 });
+	 });
+	 $("body").click(function(){
+		 $(".expression_wrap").fadeOut();
+	 });
+	 
+	 //弹出上传头像
+	 $(".mc-photo").mouseover(function(){
+		 $(".upload_photo_float").show();
+	 }).mouseout(function(){
+		 $(".upload_photo_float").hide();
+	 });
+});
+</script>
+
+<div class="mc_photo_wrap">
+	<div class="mc_photo_panel">
+	 <div class="mc-photo">
+	 	<div class="upload_photo_float">
+	 		<a class="upload_photo_btn" href="${base}/member/changephoto.jspx">上传头像</a>
+	 	</div>
+	    [#if user.userImg??]
+	  	   	[#if user.userImg!=""]
+	       		<img src="${base}${user.getUserCornerImg()!}" style="border:none" />
+	       	[#else]
+	       		<img src="/${res}/img/member/member-phtot.gif"/>
+	       	[/#if]
+     	[#else]
+     		<img src="/${res}/img/member/member-phtot.gif"/>
+     	[/#if]
+     	 <p>${user.username!}</p>
+     </div> 
+     <div class="say_panel">
+     	<div class="tri_angle_say"><img src="/${res}/image/triangle.png" /></div>
+		<textarea class="text_area" rows="4" cols="62" >说点什么..</textarea>
+		<img src="/${res}/image/Messaging.png" class="say_btn pic_btn" /> 
+		[#include "../include/表情.html"/]
+		<b></b>
+     </div>
+     <div class="person_space_btn">
+     	<div class="img_wrap" title="我的相册">
+     		<img src="/${res}/images/Picture.png" />
+     		<div class="person_space_btn_float"></div>
+     	</div>
+     	<div class="img_wrap" title="我的相册">
+     		<img src="/${res}/images/10.png" />
+     		<div class="person_space_btn_float"></div>
+     	</div>
+     	<div class="img_wrap" title="我的相册">
+     		<img src="/${res}/images/11.png" />
+     		<div class="person_space_btn_float"></div>
+     	</div>
+     </div>
+	</div>
+</div>
+
+  <!-- 
+    	  <div class="mc-left-zl">个人资料</div>
+           <ul class="nan_mu_bottom">
+          	  <li><a href="${base}/member/index.jspx">用户信息</a></li>
+              <li><a href="pwd.jspx">修改密码</a></li>
+              <li><h3 class="tg">投稿管理</h3></li>
+               <li><a href="contribute_list.jspx">稿件列表</a></li>
+              <li><a href="contribute_add.jspx">发布稿件</a></li>
+              <li><h3 class="pl">评论管理</h3></li>
+               <li><a href="mycomments.jspx">我的评论</a></li>
+              <li><a href="news_comments.jspx">评论管理</a></li>
+              <li><h3 class="ly">留言管理</h3></li>
+               <li><a href="myguestbook.jspx">我的留言</a></li>
+                <li><h3 class="scgl">收藏管理</h3></li>
+               <li><a href="collection_list.jspx">我的收藏</a></li>
+               <li><h3 class="znxx">站内信息</h3></li>
+               <li><a href="message_mng.jspx">站内信息</a></li>
+               <li><h3 class="fwzx">服务中心</h3></li>
+               <li><a href="${base}/logout.jspx?returnUrl=/">退出登录</a></li>
+            </ul> 
+     	 
+     -->

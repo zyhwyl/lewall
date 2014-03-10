@@ -1,0 +1,29 @@
+<img src="/${res}/image/expression_btn.png" class="expression_btn pic_btn" />
+<div class="expression_wrap"></div>
+
+<script> 
+$(".expression_btn").click(function(event){ 
+	event.stopPropagation();
+	
+	//ajax取得表情
+	$.get("${base}/activity/getexpression.jhtml",{},function(data){
+		var imgs=data.split(",");
+		$(".expression_wrap").html("");
+		for(var i=0;i<imgs.length;i++){
+			$("<img name='"+imgs[i]+"' class='expression_img' src='/${res}/images/expression/"+imgs[i]+".gif' />").appendTo(".expression_wrap");
+		}
+		$(".expression_wrap").fadeIn();
+		$(".expression_wrap img").click(function(){   
+			event.stopPropagation(); 
+			var $text=$(this).parent().siblings(".text_area");
+			if($text.text()=="说点什么.."){ 
+				$text.text("");
+			}
+			$text.text($text.text()+"{"+$(this).attr("name")+"}");
+		});
+	});
+});
+$("body").click(function(){
+	$(".expression_wrap").hide();
+}); 
+</script>

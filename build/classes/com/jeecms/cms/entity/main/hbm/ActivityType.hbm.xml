@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="ActivityType"
+		table="activity_type"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="integer"
+			column="at_id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="AtName"
+			column="at_name"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+		<property
+			name="AtCreatedate"
+			column="at_createdate"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+		<property
+			name="AtUserid"
+			column="at_userid"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="AtState"
+			column="at_state"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+
+
+	</class>	
+</hibernate-mapping>

@@ -1,0 +1,35 @@
+/*----------------------------------------
+Name: regist.css
+Developed by: JEECMS
+Date Created: 2010-06-27
+Last Updated: 2010-06-27
+Copyright: JEECMS
+----------------------------------------*/
+@charset "utf-8"; 
+.main{width:980px;margin:10px auto; font-size:14px; padding:10px 0;}
+.main h2{text-indent:20px; color:#3e3e3e;}
+.logo{float:left;margin:17px 0 0 20px;background:url(../image/logo.png);width:170px;height:63px;cursor:pointer;}
+.logo span{position:relative;top:46px;letter-spacing:3px;font-size:12px;}
+.input/*width:200px; */{height:20px; line-height:20px; border:1px solid #ccc; width:135px;}
+.input2/*width:200px; */{height:20px; line-height:20px; border:1px solid #ccc; width:230px;}
+
+.login-button{background:url(../img/member/denglu.gif) no-repeat; width:94px; height:32px; border:0 none; color:#fff; font-size:14px; font-weight:bold; cursor:pointer;}
+ .footer{width:980px;margin:0 auto;padding:20px 0;line-height:1.8;text-align:center;color:#999;background:url(../img/member/foot_bg.png) no-repeat 50% 0;}
+.footer a:link,.footer a:visited{color:#999;}
+ 
+ .login-bg{background:url(../img/member/login-bg.gif) no-repeat; width:327px; height:308px;}
+.button001{height:50px; width:63px; background:url(../img/denglu.jpg); background-repeat:repeat-x}
+label.error{font-size:12px;}
+.forgot-password a:link,.forgot-password a:visited{color:#999999;}
+.forgot-password a:hover,.forgot-password a:active{color:#999999; text-decoration:underline;}
+
+.regist-header{background-image:url(../img/member/bg1.gif);width:100%; height:125px;}
+.rgheader{width:980px; height:87px; margin:0 auto 10px;}
+.rgheader .brand{float:left;padding-left:20px;}
+.rgheader .brand h1 a{display:block;width:292px; height:87px;overflow:hidden;text-indent:-9999px;margin-right:10px;background:url(../img/member/regist-logo.gif) no-repeat;}
+.rg-tbg{background:url(../img/member/regist-tbg.gif) no-repeat top; width:952px;background-color:#fff;background-repeat:repeat-x;}
+.regist-submit{background:url(../img/member/regist-sumbit.gif) no-repeat; width:202px; height:43px; border:0 none; cursor:pointer;}
+
+.info_edit_selectschool{margin:30px 0 30px 0;}
+.info_edit_selectschool span{}
+.submit{float:left;}

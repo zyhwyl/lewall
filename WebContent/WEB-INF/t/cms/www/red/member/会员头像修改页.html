@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>会员中心 - ${site.name} - Powered by JEECMS</title> 
+<script src="${resSys}/jquery.js" type="text/javascript"></script>
+<script src="${resSys}/front.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="../../${res}/css/member.css" /> 
+<script src="/${res}/kindeditor-all.js"></script>
+<link rel="stylesheet" href="/${res}/themes/default/default.css" />
+<script>
+$(function(){
+	$("#submit").click(function(){ 
+		if($("#userimg").val()==""){
+			alert("请上传你的头像！");
+			return;
+		} 
+		$("#hidsub").click();
+	}); 
+});
+</script>
+</head>
+
+<body>
+[#include "会员中心页_页头.html"/]
+[#include "会员中心页_导航.html"/]
+<div style="clear:both"></div>
+<div class="container">	 
+	<form id="jvForm" action="infoimprove.jspx" method="post"> 
+		<br/>
+		[#include "image_upload.html"/]
+		<div class="photo_upload">
+			<div class="upload_preview">
+		     	 <span id="ufc1" style="float:left;display:block;">   	
+			        <input type='text' id='uploadFileText1' size="14" style="display:none;"/>  
+					<input class="member_button" id="img_pick" type='button' value=' 上传头像 '/>
+				 </span> 
+		         <br/><br/>
+		         <img id="preImg1" alt="预览" style="display:none;" src="" /> 
+	         </div>
+	         <div class="preview" >
+	           <img src="/${res}/images/user_pic/user_pic_middle.gif" id="preview" alt="Preview" class="jcrop-preview" />
+	         </div> 
+		      <div style="clear:both;"></div>
+		      <br/>
+		      <div class="submit">
+		    	<input type="button" value="提交" id="submit" class="submit_btn" />
+		    	<input type="submit" style="display:none;" id="hidsub" />
+		    </div>
+	    </div> 
+	    <input type="hidden" size="4" id="x1" name="x1" />
+        <input type="hidden" size="4" id="y1" name="y1" />
+        <input type="hidden" size="4" id="x2" name="x2" />
+        <input type="hidden" size="4" id="y2" name="y2" />
+        <input type="hidden" size="4" id="w" name="w" />
+        <input type="hidden" size="4" id="h" name="h" />
+	    <input type="hidden" name="userimg" id="userimg" />
+	</form>
+</div>
+</body>
+</html>

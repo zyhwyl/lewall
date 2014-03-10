@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>乐喔网 - lwall.net 报名！</title>
+<meta http-equiv="keywords" content=""/>
+<meta http-equiv="description" content=""/>
+<meta http-equiv="X-UA-Compatible" content="IE=7" />
+
+<script src="/${res}/js/jquery.js"></script>
+<link href="/${res}/css/index.css" rel="stylesheet" type="text/css"/>
+<link href="/${res}/css/wall.css" rel="stylesheet" type="text/css"/> 
+<script src="/${res}/js/jquery.lazyload.js"></script>
+<link id="artDialog-skin" href="${base}/thirdparty/artDialog/skins/aero.css" rel="stylesheet" />
+<script src="${base}/thirdparty/artDialog/source/artDialog.js" type="text/javascript"></script> 
+
+
+<script>
+
+[#if activity??]
+	$(function() {
+		var teamid="";
+		var height=document.body.clientHeight/2;
+		
+		$("#single_sign").click(function(){
+			var words=$("#words").val();
+			location="${base}/activity/signsave.jspx?acId=${activity.id}&isanonymous="+$("input[name='ajIsanonymous']").val()+"&words="+encodeURI(words);
+		});
+		$("#team_sign").click(function(){ 
+			if(teamid==""){
+				art.dialog({
+					title: '消息',
+				    content: '请选择一个团队！'
+				});
+			}else{
+				var words=$("#words").val();
+				location="${base}/activity/signsave.jspx?acId=${activity.id}&teamId="+teamid+"&ajIsanonymous="+$("input[name='ajIsanonymous']").val()+"&words="+encodeURI(words);
+			} 
+		});
+		$(".team_select_btn").click(function(){
+			$(".team_select").hide();
+			$(this).siblings(".team_select").show();
+			teamid=$(this).attr("name");
+		});
+		 
+		//复选框事件
+		$("#ajIsanonymous").toggle(function(){
+			$(this).attr("src","/${res}/image/checkboxselect.png");
+			$("input[name='ajIsanonymous']").val("1"); 
+		},function(){
+			$(this).attr("src","/${res}/image/un_checkbox.png");
+			$("input[name='ajIsanonymous']").val("0");
+		});
+		
+		$(".single_sign_button").click(function(){
+			$(this).siblings(".team_sign_button").children(".arrow").hide();
+			$(this).children(".arrow").show();
+			$("#team_sign").hide();
+			$("#single_sign").show(); 
+			$("#team_panel").hide();
+		});
+		
+		$(".team_sign_button").click(function(){
+			$(this).siblings(".single_sign_button").children(".arrow").hide();
+			$(this).children(".arrow").show(); 
+			$("#team_sign").show();
+			$("#single_sign").hide(); 
+			$("#team_panel").show();
+		}); 
+		//new Toast({context:$('body'),message:'Toast效果显示',top:height+"px"}).show(); 
+	});
+[/#if]
+</script>
+
+</head>
+<body style="background:url(/${res}/images/sign_back.gif);">
+  
+	<div style="height:60px;width:100%;"></div>
+	[#include "../include/页头顶栏.html"/]
+	<div style="clear:both;"></div> 
+	<div class="sign_body">
+		<div class="sign_left">
+			<div class="photo_info"> 
+				[#if user??]
+			  	   	[#if user.userImg??]
+			       		<img src="${base}${user.getUserCornerImg()!}" style="border:none" onerror="this.src='/${res}/images/user_pic/user_pic_big.gif'" width="60" height="60"/>
+			       	[#else]
+			       		<img src="/${res}/img/member/member-phtot.gif" width="60" height="60"/>
+			       	[/#if]
+		     	[/#if]
+		     	<span>${user.username!}<br/>
+		     		${user.group.name!}
+		     	</span>
+			</div>
+			<div class="sign_btn_panel"> 
+			  [#if activity??]
+			  	[#if activity.acState=2] 
+			  		<div class="single_sign_button_gray">
+			  			<img src="/${res}/images/single_person.gif" />
+			  			<div style="clear:both;"></div>
+			  			<span>个人报名</span>
+			  		</div>
+			  		<div class="team_sign_button_gray">
+			  			<img src="/${res}/images/more_people.gif" />
+			  			<div style="clear:both;"></div>
+			  			<span>团队报名</span>
+			  		</div>
+				[#else]
+					[#if activity.acCategory=1]
+						<div class="single_sign_button"> 
+							<img src="/${res}/images/single_person.gif" />
+							<img src="/${res}/images/arrow_right.gif" />
+				  			<div style="clear:both;"></div>
+				  			<span>个人报名</span>
+						</div>
+						<div class="team_sign_button_gray">
+				  			<img src="/${res}/images/more_people.gif" /> 
+				  			<div style="clear:both;"></div>
+				  			<span>团队报名</span>
+				  		</div>
+					[/#if]
+					[#if activity.acCategory=2] 
+						<div class="single_sign_button_gray">
+				  			<img src="/${res}/images/single_person.gif" />
+				  			<div style="clear:both;"></div>
+				  			<span>个人报名</span>
+				  		</div>
+						<div class="team_sign_button">
+							<img src="/${res}/images/more_people.gif" />
+							<img src="/${res}/images/arrow_right.gif" />
+				  			<div style="clear:both;"></div>
+				  			<span>团队报名</span>
+						</div>
+					[/#if]
+					[#if activity.acCategory=3] 
+						<div class="single_sign_button">
+							<img src="/${res}/images/single_person.gif" />
+							<img src="/${res}/images/arrow_right.gif" class="arrow"  />
+				  			<div style="clear:both;"></div>
+				  			<span>个人报名</span>
+						</div>
+						<div class="team_sign_button"> 
+							<img src="/${res}/images/more_people.gif" />
+							<img src="/${res}/images/arrow_right.gif" style="display:none;" class="arrow" />
+				  			<div style="clear:both;"></div>
+				  			<span>团队报名</span>
+						</div> 
+					[/#if]
+				[/#if]
+			  [/#if] 
+			</div>
+			<div class="sign_info">
+				<p>免责申明：
+					<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;免责申明免责申明免责申明免责申明免责申明
+				</p>
+				<br/>
+			</div>
+		</div>
+		<div class="sign_center">
+			<div class="sign_main">
+				[#if error??]
+					<span class="error">${error!}</span>
+				[#else]
+					[#if activity??]
+						[#if activity.acState=2]
+							对不起，该活动已经结束哦！！
+						[#else]
+							[#if activity.acCategory=1]
+								<ul class="single_sign_item">
+									<li>该活动只允许单人报名！</li>
+									<li><img src="/${res}/image/un_checkbox.png" id="ajIsanonymous" class="imgcheckbox" />&nbsp; 
+										<input type="hidden" name="ajIsanonymous" value="0" /> 是否匿名报名（匿名报名只有发布活动的用户才能见到你的信息）</li>
+									<li><textarea rows="3" id="words" class="text_area" cols="26"></textarea> 
+										<span style="float:left;padding-top:5px;">给发布者留言</span>[#include "../include/表情.html"/]
+									</li>
+								</ul>
+								<div class="sign_btn" id="single_sign">
+									<span>点击<br/>报名</span>
+								</div>  
+								<input type="checkbox" name="agree" />是否同意以上条款
+							[/#if]
+							[#if activity.acCategory=2] 
+								<ul class="single_sign_item">
+									<li>该活动只允许团队报名！！</li>
+									<li>
+										<img src="/${res}/image/un_checkbox.png" id="ajIsanonymous" class="imgcheckbox" />&nbsp; 
+										<input type="hidden" name="ajIsanonymous" value="0" /> 是否匿名报名（匿名报名只有发布活动的用户才能见到你的信息）
+									</li>
+									<li><textarea rows="3" id="words" class="text_area" cols="26"></textarea> 
+										<span style="float:left;padding-top:5px;">给发布者留言</span>[#include "../include/表情.html"/]
+									</li>
+									<li>
+										[@userteamlist userId='${user.id}']
+											[#if error??]
+											<div class="sign_team_pub_panel">
+												你还没有创建或者加入团队！<br/>
+												点击<a href="${base}/member/createteam.jspx">创建</a>属于自己的团队
+											</div>
+											[/#if]
+											[#if teamList??]
+												[#list teamList as team]
+													<div class="sign_team_pub_panel">
+													<img src="/${res}/image/ok.gif" class="team_select" />
+														${team.teamName!}<br/>
+														<img src="${base}${team.acUserTeamExt.teamLogo!}" width="80" height="83" />
+														成员：[#if team.members??]${team.members?size}[/#if] 
+														<a href="javascript:void(0);" class="team_select_btn" name="${team.id}">选择</a>
+													</div>
+												[/#list]
+											[/#if]
+											[#if joinList??]
+												[#list joinList as team]
+													<div class="sign_team_pub_panel">
+														<img src="/${res}/image/ok.gif" class="team_select" />
+														${team.teamName!}<br/>
+														<img src="${base}${team.acUserTeamExt.teamLogo!}" width="80" height="83" />
+														成员：[#if team.members??]${team.members?size}[/#if] 
+														[#if team.canpub=0]
+															对不起，你不能以此团队名义报名！
+														[#else]
+															<a href="javascipt:void(0)" class="team_select_btn" name="${team.id}">选择</a>
+														[/#if]
+													</div>
+												[/#list]
+											[/#if]
+										[/@userteamlist]
+									</li>
+								</ul>
+								<div class="sign_btn" id="team_sign">
+									<span>点击<br/>报名</span>
+								</div> 
+							[/#if]
+							[#if activity.acCategory=3]
+								<ul class="single_sign_item">
+									<li>你可以选择两种报名方式！</li>
+									<li>
+										<img src="/${res}/image/un_checkbox.png" id="ajIsanonymous" class="imgcheckbox" />&nbsp; 
+										<input type="hidden" name="ajIsanonymous" value="0" /> 是否匿名报名（匿名报名只有发布活动的用户才能见到你的信息）
+									</li>
+									<li><textarea rows="3" id="words" class="text_area" cols="26"></textarea> 
+										<span style="float:left;padding-top:5px;">给发布者留言</span>[#include "../include/表情.html"/]
+									</li>
+									<li id="team_panel" style="display:none;">
+										[@userteamlist userId='${user.id}']
+											[#if error??]
+											<div class="sign_team_pub_panel">
+												你还没有创建或者加入团队！<br/>
+												点击<a href="${base}/member/createteam.jspx">创建</a>属于自己的团队
+											</div>
+											[/#if]
+											[#if teamList??]
+												[#list teamList as team]
+													<div class="sign_team_pub_panel">
+													<img src="/${res}/image/ok.gif" class="team_select" />
+														${team.teamName!}<br/>
+														<img src="${base}${team.acUserTeamExt.teamLogo!}" width="80" height="83" />
+														成员：[#if team.members??]${team.members?size}[/#if] 
+														<a href="javascript:void(0);" class="team_select_btn" name="${team.id}">选择</a>
+													</div>
+												[/#list]
+											[/#if]
+											[#if joinList??]
+												[#list joinList as team]
+													<div class="sign_team_pub_panel">
+														<img src="/${res}/image/ok.gif" class="team_select" />
+														${team.teamName!}<br/>
+														<img src="${base}${team.acUserTeamExt.teamLogo!}" width="80" height="83" />
+														成员：[#if team.members??]${team.members?size}[/#if] 
+														[#if team.canpub=0]
+															对不起，你不能以此团队名义报名！
+														[#else]
+															<a href="javascipt:void(0)" class="team_select_btn" name="${team.id}">选择</a>
+														[/#if]
+													</div>
+												[/#list]
+											[/#if]
+										[/@userteamlist]
+									</li>
+								</ul>
+								<div class="sign_btn" id="single_sign">
+									<span>点击<br/>报名</span>
+								</div> 
+								<div class="sign_btn" id="team_sign" style="display:none;">
+									<span>点击<br/>报名</span>
+								</div> 
+							[/#if]
+						[/#if]
+					[/#if]
+				[/#if]
+			</div>
+		</div>
+		<div class="sign_right">
+			<div class="sign_suggest_activity">
+				<div class="hot_tag">
+					<div class="hot_tag_top">热门标签</div>
+					<div class="hot_tag_content"></div>
+				</div>
+			</div>
+		</div> 
+	</div>  
+	<style>
+		.footer-box{text-align:center;width:978px;height:38px;overflow:hidden;}
+		.foot{width:978px;height:38px;background:#000;text-align:center;margin:0 auto;
+			filter:alpha(opacity=10);-moz-opacity:0.1;-khtml-opacity:0.1;opacity:0.1;display:block;margin-top:5px;}
+		.bottom_font{color:#eee;margin:8px auto 0 auto;}
+		.bottom_font a{margin-left:20px;color:#eee;}
+		.foot_img{}
+		.float_img{width:978px;text-align:center;margin:0 auto;position:absolute;}
+	</style> 
+	<div class="footer-box">
+		<div class="float_img">
+			<div class="bottom_font">
+				<a href="#">关于我们</a>
+				<a href="#">联系我们</a>
+				<a href="#">版权声明</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				@ 2012-2013 www.lwall.net
+			</div> 
+		</div>
+		<div class="foot">
+			<div class="foot_img">
+			</div>
+		</div>
+	</div>
+</body>
+</html>

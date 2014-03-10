@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=7" />
+<meta property="qc:admins" content="45400665376471446654" />
+<title>乐喔网-创造我们的生活 www.lwall.net </title>
+<link href="/${res}/css/index_new.css" rel="stylesheet" type="text/css"/> 
+<meta http-equiv="keywords" content="大学生活动网  大学生团队社交网站 大学校园周活动"/>
+<meta http-equiv="description" content="大学生活动网  大学生团队社交网站 大学校园周活动 "/>
+<script type="text/javascript" src="${base}/thirdparty/poshytip-1.1/demo/includes/jquery-1.4.2.min.js"></script>
+<link rel="stylesheet" href="${base}/thirdparty/poshytip-1.1/src/tip-skyblue/tip-skyblue.css" type="text/css" />
+<script type="text/javascript" src="${base}/thirdparty/poshytip-1.1/src/jquery.poshytip.js"></script> 
+ 
+<script>
+$(function(){
+	$(".person_back").poshytip({
+		className: 'tip-skyblue',
+		showOn: 'none',
+		alignTo: 'target',
+		alignX: 'inner-left',
+		offsetX: 5,
+		offsetY: 13,
+		hideAniDuration:1
+	}); 
+	showFlag=1;
+	//定时随机显示某人的说说
+	function showComment(){ 
+		var rand = parseInt(Math.random() * $(".user_say_alert").length); 
+		var i=0;
+		if(showFlag==1){
+			$(".user_say_alert").each(function(){
+				if(i==rand){
+					$(this).parent().poshytip("enable");
+					$(this).parent().poshytip("update",$(this).children(".say_body").html());
+					$(this).parent().poshytip("show");
+					
+					var $tmp=$(this).parent();
+					setTimeout(function(){$tmp.poshytip('disable')},4000);
+				}
+				i++;
+			})
+			i=0;
+		}
+		if($(".user_say_alert").length==1){
+			showFlag=0;
+		}
+	}
+	showComment();
+	var show=setInterval(showComment,4000);
+});
+</script>
+</head>
+
+<body>
+<div class="container">
+	[#include "首页_head.html"/] 
+	<div class="mainbody-box">
+		<div class="mainbody-box-main1">
+			<a href="${base}/championwall.jhtml" class="sy-btnct1"></a>
+			<a href="${base}/" class="sy-btnct2"></a>
+			<a href="${base}/teamwall.jhtml" class="sy-btnct3"></a>
+			<a href="#" class="sy-btnct4"></a>
+		</div>
+		
+		<div class="mainbody-box-main2">
+			<div class="mainbody-main2-con1">
+				<table>
+					<tr>
+						<td class="index-gg">网站公告:<a href="#" id="demo-basic" title="Hey, there! This is a tooltip." >热烈庆祝乐喔网0.1beta测试版开通！</a></td>
+						<td><a href="#" class="next1"><img src="/${res}/images/arrow_left.gif"/></a>&nbsp;&nbsp;<a href="#" class="next2"><img src="/${res}/images/arrow_right.gif"/></a></td>
+					</tr>
+				</table>
+			</div>
+			<div class="mainbody-main2-con2">
+				[@userlist schoolId="4" isAdmin=false]
+				[#if userList??]
+					[#list userList as walluser]
+						<div class="person_back">
+							[#if walluser.id=51]
+								<img src="/${res}/images/god.png" style="position:absolute;margin:-8px 0 0 -11px;" width="60" />
+							[/#if]
+							[#if walluser.getUserSay()??]
+							<div class="user_say_alert">
+								<div class="say_top"></div>
+								<div class="say_body">${walluser.getUserSay()!}</div>
+								<div class="say_bottom"></div>
+							</div>
+							[/#if] 
+							<div class="info_panel">
+								<div class="user_big_photo">
+									[#if walluser.userImg??] 
+										<img src="${base}${walluser.getUserThumbImg()!}" title="${walluser.username}" onerror="this.src='/${res}/images/user_pic/user_pic_big.gif'" width="80" />
+									[#else]
+										<img src="/${res}/image/memberdefualt.png" />
+									[/#if]
+									<div class="user_pub_panel" name="${walluser.id}">
+									</div>
+								</div>
+								<div style="clear:both;"></div>
+								<div class="bottom_button_panel">
+									&nbsp;<span>${walluser.username}&nbsp;${walluser.group.name!}</span>
+								</div>
+								<div class="user_say_panel">
+									${walluser.getUserSay()!}
+								</div> 
+							</div>
+							[#if walluser.userImg??]
+								<img class="user_photo" src="${base}${walluser.getUserThumbImg()!}" alt="${walluser.username}" onerror="this.src='/${res}/images/user_pic/user_pic_middle.gif'" />
+							[#else]
+								<img class="user_photo" src="/${res}/image/memberdefualt.png" />
+							[/#if]
+						</div>
+					[/#list]
+				[/#if]
+				[/@userlist]
+			</div>
+		</div>
+		
+		<div class="mainbody-box-main3">
+			[#include "签到.html"/]
+			<a href="${base}/activity/index/4.jhtml" class="sy-btnct6"></a>
+			<a href="${base}/activity/dreamwall.jhtml" class="sy-btnct7" ></a>
+		</div>
+	</div>
+[#include "首页_foot.html"/]
+</div> 
+</body>
+</html>

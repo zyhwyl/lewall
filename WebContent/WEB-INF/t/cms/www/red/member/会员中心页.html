@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>会员中心 - ${site.name} - Powered by JEECMS</title> 
+<script src="/${res}/js/jquery.js"></script> 
+<link rel="stylesheet" type="text/css" href="../../${res}/css/member.css" />
+<link href="${base}/res/common/css/theme.css" rel="stylesheet" type="text/css"/>
+<script src="/${res}/kindeditor-all.js"></script>
+<link rel="stylesheet" href="/${res}/themes/default/default.css" />
+<script src="/${res}/js/jquery.lazyload.js"></script> 
+<script> 
+$(function(){
+	$(".team_edit").toggle(function(){
+		//切换为编辑模式 显示可编辑的控件
+		var id=$(this).attr("name");
+		$("#createuserduty"+id).show()
+			.siblings().hide();
+		$("#teaamdesc"+id).show()
+			.siblings("span").hide();
+		$("#add_tag"+id).show();
+		$(this).parent().siblings(".create_user_panel")
+			.children(".tag_wrap").children(".tagdiv").children("b").show();
+
+		$(this).parent().siblings(".member_user_panel").each(function(){ 
+			$(this).children(".member_detail_font")
+				.children("ul").children("li:eq(0)").children("input").show().siblings("span").hide();
+		});
+		$(this).parent().siblings(".save_btn_panel").show();
+	},function(){
+		//切换为普通模式
+		var id=$(this).attr("name");
+		$("#createuserduty"+id).hide()
+			.siblings().show();
+		$("#teaamdesc"+id).hide().siblings("b").hide()
+			.siblings("span").show();
+		$("#add_tag"+id).hide();
+		$(this).parent().siblings(".create_user_panel")
+			.children(".tag_wrap").children(".tagdiv").children("b").hide();
+		$(this).parent().siblings(".member_user_panel").each(function(){ 
+			$(this).children(".member_detail_font")
+				.children("ul").children("li:eq(0)").children("input").hide().siblings("span").show();
+		});
+		$(this).parent().siblings(".save_btn_panel").hide();
+	});
+	
+	//删除团队
+	$(".delete_team").click(function(){
+		if(confirm("你确定不是手滑，解散团队后，\n该团队的任何资料都将删除，请慎重哦！")){
+			
+		}
+	});
+	//添加标签
+	$('.tag_text').keydown(function(e){ 
+		if(e.keyCode==13){ 
+			var id=$(this).attr("name");
+			if($.trim($(this).val())==""){
+				alert("请输入标签内容");
+			}else if($.trim($(this).val()).length>8){
+				alert("标签不能超过8个字符！");
+			}else{
+				//检查标签是否存在
+				if($("#tag_wrap"+id).children("span").children("span").text()==$.trim($(this).val())){
+					alert("你已经添加过该标签了！")
+				}else{
+					$('<span class="tagdiv"><span>'+$.trim($(this).val())+'</span><b style="display:inline;">&nbsp;x</b></span>').appendTo("#tag_wrap"+id).fadeIn();
+					$(this).val("");
+				}
+			}
+		} 
+	}); 
+	//删除标签
+	$(".tagdiv>b").live("click",function(){
+		if($(".tagdiv").length==1){
+			alert("至少要一个标签！");
+			return;
+		}
+		$(this).parent().remove();
+	});
+	//更新保存
+	$(".savebtn").click(function(){
+		var id=$(this).attr("name");
+		//得到该团队创建人的称号
+		var createDuty=$("#createuserduty"+id).val();
+		var memberids="";
+		var memberdutys="";
+		var teaamdesc=$("#teaamdesc"+id).val();
+		var teamlogo="";
+		
+		if($.trim(createDuty)==""){
+			alert("创建人的团队称号不能为空！");
+			return;
+		}
+		//得到当前团队标签
+		var tags="";
+		$(".tagdiv").each(function(){
+			tags=tags+$(this).children("span").text()+",";
+		});
+		if(tags!=""){
+			tags=tags.substring(0,tags.length-1);
+		}
+		
+		$(".member_user_panel").each(function(){
+			var memberid=$(this).attr("id");
+			memberids=memberids+memberid+",";
+			memberdutys=memberdutys+$("#memberuserduty"+memberid).val()+",";
+		});
+		memberdutys=memberdutys.substring(0,memberdutys.length-1);
+		memberids=memberids.substring(0,memberids.length-1);
+		//得到团队口号
+		if($.trim(teaamdesc)==""){
+			alert("团度口号不能为空！");
+			return;
+		}
+		//得到团队LOGO
+		teamlogo=$('#uploadImgPath'+id).val();
+		
+		//ajax提交保存当前更新
+		$.post("${base}/member/teamupdate.jspx",{"id":id,"createDuty":createDuty,"memberids":memberids,"memberdutys":memberdutys,"teaamdesc":teaamdesc,"teamlogo":teamlogo},function(data){
+			if(data=="0"){
+				alert("请先登录！");
+				location.reload();
+			}else if(data=="1"){
+				var pageH = $(document.body).height(); //页面总高度 
+		    	var scrollT = $(window).scrollTop(); //滚动条top  
+		    	var height = pageH-scrollT;
+		    	
+				new Toast({context:$('body'),message:'呵呵 更新成功！',top:height+"px"}).show(); 
+				setTimeout(function(){location.reload()},2000);
+			}else if(data=="2"){
+				alert("你没有权限修改该团队...");
+				location.reload();
+			}else{
+				alert("error:程序异常");
+			}
+		});
+	});
+});
+
+KindEditor.ready(function(K) {
+	var editor = K.editor({
+		allowFileManager : true,
+		uploadJson : '${base}/member/team_photo_upload_image.jspx'
+	}); 
+	K('#upload-file').click(function() {
+		var id=K(this).attr("name");
+		editor.loadPlugin('image', function() {
+			editor.plugin.imageDialog({
+				showRemote : false,
+				imageUrl : K('#uploadImgPath1').val(),
+				clickFn : function(url, title, width, height, border, align) {
+					K('#teamlogoimg'+id).attr("src",url); 
+					K('#uploadImgPath'+id).val(url.replace("/cms",""));   
+					editor.hideDialog();
+				}
+			});
+		});
+	});
+});
+</script>
+</head>
+
+<body>
+[#include "会员中心页_页头.html"/]
+[#include "会员中心页_导航.html"/]
+<div style="clear:both"></div>
+<div class="container">	 
+	<div class="left_panel">
+		<div class="member_panel">
+			<div class="member_top"><span>我的团队 our team</span></div>
+			<div class="content">
+				[@userteamlist userId='${user.id}']
+					[#if error??]
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="error">${error}&nbsp;&nbsp;&nbsp;&nbsp;<a href="createteam.jspx">创建一个</a></span>
+					[/#if]
+					[#if teamList??]
+						[#list teamList as team]
+							<div class="timeline_panel">
+								<div class="team_logo"><img src="${base}${team.acUserTeamExt.teamLogo!}" id="teamlogoimg${team.id}" width="40" height="42" /><br/></div>	
+								<div class="tri_angle"><img src="/${res}/image/triangle.png" /></div>
+								<div class="member_team_panel">
+									
+									<span class="time_font">${team.teamCreatetime!}&nbsp;&nbsp;<span class="team_name_font">我创建了：${team.teamName!}</span></span>
+									<div class="setting_btn" >
+										<img src="/${res}/image/team_home.png" name="${team.id}"alt="主页" title="主页" />
+										<img src="/${res}/image/team_photo.png" name="${team.id}"alt="相册" title="相册" />
+										<img src="/${res}/image/team_setting.png" class="team_edit" name="${team.id}" alt="编辑" title="编辑" />
+									</div>
+									<div class="create_user_panel">
+										<img src="${base}${team.teamCreateuserimg!}" width="42" height="42" />
+										<div class="member_detail_font">
+											<ul>
+												<li><span>${team.teamCreateuserduty!}</span>
+													<input type="text" class="in_50" value="${team.teamCreateuserduty!}" name="createuserduty" id="createuserduty${team.id}" />
+												</li>
+												<li>${team.teamCreateusername!}</li>
+											</ul>
+										</div>
+										[#if team.tags??]
+										<div class="tag_wrap" id="tag_wrap${team.id}">
+											[#list team.tags as tag]			
+												<span class="tagdiv"><span name="">${tag.tagName!}</span>
+													<b>&nbsp;x</b>
+												</span>
+											[/#list]
+										</div>
+										[/#if]
+										<div class="fans_panel">粉丝：${team.acUserTeamExt.teamFans!}&nbsp;鲜花:${team.acUserTeamExt.teamFlowers!}&nbsp;鸡蛋：${team.acUserTeamExt.teamEggs!}</div>
+									</div>
+									[#if team.members??]
+										[#list team.members as member]
+											<div class="member_user_panel" id="${member.id}">
+												<img src="${base}${member.autUserimg!}" width="42" height="42" />
+												<div class="member_detail_font">
+													<ul>
+														<li><span>${member.autDuty!}</span><input type="text" class="in_50" value="${member.autDuty!}" name="memberuserduty" id="memberuserduty${member.id}" /></li>
+														<li>${member.autUsername!}
+															[#if member.autState=0]
+																已加入
+															[/#if]
+															[#if member.autState=1]
+																邀请中
+															[/#if]
+															[#if member.autState=2]
+																申请中
+															[/#if]
+															[#if member.autState=3]
+																已禁用
+															[/#if]
+															[#if member.autState=3]
+																拒绝加入
+															[/#if]
+														</li>
+													</ul>
+												</div>
+											</div>
+										[/#list]
+									[/#if]
+									<div class="team_say_panel">团队口号：<span>${team.acUserTeamExt.teamDesc!}</span><textarea id="teaamdesc${team.id}" class="teamdeac_txt" >${team.acUserTeamExt.teamDesc!}</textarea><b></b></div>
+									<div style="clear:both;"></div>
+									<div class="team_tag_panel" id="add_tag${team.id}">添加标签：<input type="text" name="${team.id}" class="in_50 tag_text" style="display:inline;width:160px;" />&nbsp;(按回车键添加)</div>
+									<div class="save_btn_panel">
+										<input type="button" value="保存" style="padding:0;border:none;" class="add savebtn" name="${team.id}"/>&nbsp; 
+										<input id="uploadImgPath${team.id}" name="teamlogo" style="width:220px" type="hidden" value="${team.acUserTeamExt.teamLogo!}" />
+										<input style="padding:0;border:none;"type="button" value="上传LOGO" id="upload-file" class="upload-file" name="${team.id}"/>
+										<a href="javascript:void(0)">高级设置</a>&nbsp;&nbsp;
+										<a href="javascript:void(0)" class="delete_team" name="${team.id}" >解散团队</a>
+									</div>
+								</div>
+								<div style="clear:both;"></div>
+							</div>
+							<div style="clear:both;"></div>
+						[/#list]
+					[/#if]
+					[#if joinList??]
+						[#list joinList as team]
+							<div class="timeline_panel">
+								<div class="team_logo"><img src="${base}/circle/a${team.acUserTeamExt.teamLogo!}" width="40" height="42" /></div>
+								<div class="tri_angle"><img src="/${res}/image/triangle.png" /></div>
+								<div class="member_team_panel">
+									<span class="time_font">${team.teamCreatetime!}&nbsp;&nbsp;<span class="team_name_font">我加入了他们：${team.teamName!}</span></span>
+									<div class="create_user_panel">
+										<img src="${base}${team.teamCreateuserimg!}" width="42" height="42" />
+										<div class="member_detail_font">${team.teamCreateuserduty!}<br/>${team.teamCreateusername!}</div>
+										[#if team.tags??]
+										<div class="tag_wrap">
+											[#list team.tags as tag]			
+												<span class="tagdiv">${tag.tagName!}</span>
+											[/#list]
+										</div>
+										[/#if]
+										<div class="fans_panel">粉丝：${team.acUserTeamExt.teamFans!}&nbsp;鲜花:${team.acUserTeamExt.teamFlowers!}&nbsp;鸡蛋：${team.acUserTeamExt.teamEggs!}</div>
+									</div> 
+									[#if team.members??]
+										[#list team.members as member]
+											<div class="member_user_panel">
+												<img src="${base}${member.autUserimg!}" width="42" height="42" />
+												<div class="member_detail_font">${member.autDuty!}<br/>${member.autUsername!}
+													[#if member.autState=0]
+														已加入
+													[/#if]
+													[#if member.autState=1]
+														邀请中
+													[/#if]
+													[#if member.autState=2]
+														申请中
+													[/#if]
+													[#if member.autState=3]
+														已禁用
+													[/#if]
+													[#if member.autState=3]
+														拒绝加入
+													[/#if]
+												</div>
+											</div>
+										[/#list]
+									[/#if]
+									<div class="team_say_panel">团队口号：${team.acUserTeamExt.teamDesc!}</div>
+								</div>
+								<div style="clear:both;"></div>
+							</div>
+							<div style="clear:both;"></div>
+						[/#list]
+					[/#if]
+				[/@userteamlist]
+			</div>
+			<div class="bottom"></div>
+		</div>
+		<div class="member_panel">
+			<div class="member_top"><span>我的经历 my experience</span></div>
+			<div class="content"></div>
+			<div class="bottom"></div>
+		</div>
+	    <div style="clear:both"></div>
+	</div>
+	<div class="right_panel">
+		<div class="friend_list">
+   			<div class="top"><span>好友列表</span></div>
+   			[#if user??]
+   				[@friendlist userid="${user.id}"]
+   					[#if error??]
+   						&nbsp;&nbsp;&nbsp;&nbsp;${error}
+   					[/#if]
+   					[#if userList??]
+   						[#list userList as user]
+   							<div class='user_panel' id='friend${user.id}'>
+								<img src='${base}${user.getUserCornerImg()!}' width='48' height='48' />
+								<span>${user.username!}</span>
+							</div>
+   						[/#list]
+   					[/#if]
+   				[/@friendlist]
+   			[/#if]
+   		</div>
+	</div>
+</div>
+</body>
+</html>

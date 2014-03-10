@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+
+</script>
+</head>
+<body>
+<@p.form id="jvForm" action="activitytype_update.do" labelWidth="10" name="school">
+<input type="hidden" value="${activitytype.id!}" name="id" />
+<@p.text class="required" maxlength="150" size="" value="${activitytype.atName!}" name="atName" label="类型名称"/>
+<td class="pn-flabel pn-flabel-h">状态</td><td class="pn-fcontent">
+ <input type="radio" <#if activitytype.atState=1>checked="checked"</#if> value="1" name="atState" />启用&nbsp;&nbsp;<input type="radio" <#if activitytype.atState=0>checked="checked"</#if> value="0" name="atState" />禁用
+</td>
+</tr><tr>
+<@p.td colspan="2"> 
+<@p.submit code="global.submit"/> 
+</@p.td>
+<input type="hidden" name="atCreatedate" value="${activitytype.atCreatedate!}" />
+<input type="hidden" name="atUserid" value="${activitytype.atUserid!}" />
+</@p.form>
+</body>
+</html>

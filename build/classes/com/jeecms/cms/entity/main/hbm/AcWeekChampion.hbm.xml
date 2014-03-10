@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="AcWeekChampion"
+		table="ac_week_champion"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="integer"
+			column="champion_id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="ChampionActivity"
+			column="champion_activity"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="ChampionUser"
+			column="champion_user"
+			type="string"
+			not-null="false"
+			length="12"
+		/>
+		<property
+			name="SecendUser"
+			column="secend_user"
+			type="string"
+			not-null="false"
+			length="12"
+		/>
+		<property
+			name="ThirdUser"
+			column="third_user"
+			type="string"
+			not-null="false"
+			length="12"
+		/>
+		<property
+			name="ChampionDate"
+			column="champion_date"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+		<property
+			name="SchoolId"
+			column="school_id"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="ChampionState"
+			column="champion_state"
+			type="integer"
+			not-null="false"
+			length="3"
+		/> 
+		<one-to-one name="AcWeekChampionExt" class="AcWeekChampionExt" constrained="true"/>
+	</class>	
+</hibernate-mapping>

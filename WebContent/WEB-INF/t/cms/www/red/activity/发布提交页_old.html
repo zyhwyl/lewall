@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>乐喔网 --lwall.net--发布活动！</title>
+<meta http-equiv="keywords" content="JEECMS演示站"/>
+<meta http-equiv="description" content="JEECMS演示站"/>
+
+<link href="/${res}/css/ui-lightness/jquery-ui-1.9.1.custom.css" rel="stylesheet">
+<script src="/${res}/js/jquery-1.8.2.js"></script>
+<script src="/${res}/js/jquery-ui-1.9.1.custom.js"></script>
+<script src="${base}/thirdparty/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/${res}/themes/default/default.css" />
+<script src="/${res}/kindeditor-all.js"></script>
+<script src="/${res}/lang/zh_CN.js"></script>
+<link href="/${res}/css/index.css" rel="stylesheet" type="text/css"/>
+
+<script>
+	var tags="";
+	var images="";
+	
+	(function($) {$.fn.validate = function() {
+        $(this).bind("submit", function() {
+        	var flag=0;
+        	
+        	if(tags==""){
+        		alert("帅哥（美女），好歹也贴个标签吧！！！！");
+        		$("#tag_input").focus();
+        		return false;
+        	}
+        	if(images==""){
+        		alert("帅哥（美女），传一张图片也好啊！！！！");
+        		return false;
+        	}
+        	if($("#scid").val()==""){
+        		alert("请选择所在的学校！！！！");
+        		return false;
+        	}
+        	
+        	//验证表单必填字段是否为空
+        	$(this).children().find(":text").each(function(){
+        		if($(this).attr("class")=="require"){
+        			if($(this).val()==""){
+        				alert($(this).attr("id")+"不能为空！");
+            			$(this).focus();
+            			$(this).select();
+            			flag=1;
+            			return false;
+        			}
+        		}
+        	});
+        	if(flag==1){
+        		return false;
+        	}
+	       });
+	    };
+	    
+	})(jQuery);
+	
+	$(function() {
+		$("#activityform").validate();
+		//添加一个标签
+		$("#tag_button").click(function(){
+			var taghtml=getTagDiv($("#tag_input").val());
+			if($("#tag_input").val()!=""){
+				$(taghtml).appendTo("#tagblock").animate({"opacity":"1"},1500);
+				$("#tag_input").val("");
+				refreshParam();
+			}else{
+				alert("请输入标签名称！");
+				$("#tag_input").focus();
+			}
+		});
+		
+		//得到标签函数
+		function getTagDiv(tagname){
+			//判断标签是否添加过
+			var flag=1;
+		
+			$(".tagdiv").each(function(){
+				if($(this).text()==tagname){
+					alert("标签已经添加过了！");
+					flag=0;
+					return;
+				}
+			});
+			if(flag==0){
+				$("#tag_input").focus();
+				return;
+			}
+			return "<div class='tagdiv'>"+tagname+"</div>";
+		}
+		
+		//删除标签
+		$(".tagdiv").live("click", function(){ 
+      		$(this).remove();
+      		refreshParam();
+  		}); 
+
+		
+		//刷新图片和标签
+		function refreshParam(){
+			tags="";
+			//刷新标签
+			$(".tagdiv").each(function(){
+				if($(this).text()!=""){
+					tags=tags+$(this).text()+",";
+				}
+			});
+			if(tags!=""){
+				$("#tags").val(tags.substring(0,tags.length-1));
+			}
+		}
+		
+		//选择学校
+		$(".schoolname").click(function(){
+			$(this).attr("class","selectschool").siblings().attr("class","unselectschool");
+			//刷新学校
+			$("#scid").val($(this).attr("dir"));
+		});
+	});
+	KindEditor.ready(function(K) {
+		var editor = K.editor({
+			allowFileManager : true,
+			uploadJson : '${base}/kindeidter/o_upload_image.jspx'
+		});
+		K('#J_selectImage').click(function() {
+			editor.loadPlugin('multiimage', function() {
+				editor.plugin.multiImageDialog({
+					clickFn : function(urlList) {
+						var div = K('#J_imageView');
+
+						images=K("#imageshidden").val();
+						K.each(urlList, function(i, data) {
+							div.append('<img class="upload_image" src="' + data.url + '" width="260">');
+							//刷新当前imgpath
+							images=images+data.url+",";
+						});
+						if(images!=""){
+							K("#imageshidden").val(images);
+						}
+						editor.hideDialog();
+					}
+				});
+			});
+		});
+		
+		var editor1 = K.create('textarea[name="txt"]', {
+			resizeType : 1,
+			allowPreviewEmoticons : false,
+			allowImageUpload : false,
+			resize:false,
+			items : [
+				'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+				'link']
+		});
+		prettyPrint();
+	});
+</script>
+
+</head>
+<body>
+<div class="dbj"><img src="/${res}/image/dbj.jpg" width="100%" /></div>
+
+<div class="block_wrap">
+	<div class="head" style="background:none;">
+		<div class="logo"><span>那些年 我们在这里疯过..</span></div>
+		<div class="now_site_block">
+			<span class="province">[贵阳市]</span>
+			<span class="school">贵州大学</span>
+			<span>切换城市</span>
+			[#if user??]
+				<a href="${base}/activity/save.jspx?cityid=1" class="pubhref">我来发起！</a>
+			[#else]
+				<a href="${base}/connect/qq/login"><img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Connect_logo_3.png" width="122" height="26" style="border:none;"></a>
+			[/#if]
+		</div>
+		<div class="head_button">
+		</div>
+	</div>
+	
+	[#if error??]
+		<span>${error!}</span>
+	[#else]
+		<form action="${base}/activity/save.jspx" method="post" id="activityform" >
+			<div class="block">
+				<div class="left_panel"></div>
+				<div class="main_panel"></div>
+				<div class="right_panel"></div>
+				
+				<div id="J_imageView"></div>
+				<div class="addpicbutton" id="J_selectImage" >这里添加图片</div>
+				<input type="hidden" name="imgpaths" id="imageshidden" />
+			</div>
+			<div class="tag">
+				<div id="tagblock"></div>
+				<input type="text" id="tag_input"/>
+				<input type="button" value="加入一个标签" id="tag_button"/>
+				<input type="hidden" name="tags" id="tags" />
+			</div>
+			<div class="desc">
+				<div class="top"><span>再弄点介绍吧：</span></div>
+				<textarea style="width:258px;height:220px;overflow:hidden;border:0;" name="txt"></textarea>
+			</div>
+			<div class="school">
+				<div class="top">活动在哪里进行？</div>
+				<div class="content">
+				[#list districkList as districk]
+					${districk.districkName}
+					[#if districk.activitySchools??]
+						[#list districk.activitySchools as school]
+							[#if school??]
+								<div class="unselectschool schoolname" dir="${school.id!}" >${school.scName!}</div>
+							[/#if]
+						[/#list]
+					[/#if]
+				[/#list]
+				<input type="hidden" name="scid" value="" id="scid" />
+				</div>
+			</div>
+			<div class="signrestrick">
+				人数限制：<input type="text" class="require" name="signMin" id="人数下限" />--<input type="text" class="require" name="signMax" id="人数上限" />
+			</div>
+			<div class="beginDate">
+				开始时间：<input type="text" class="require" id="开始时间" name="beginDate" class="Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
+			</div>
+			<div class="activityType">
+				活动类型：<select name="acCategory">
+						[#list activityType as type]
+							<option value="${type.id}">${type.atName!}</option>
+						[/#list]
+				</select>
+			</div>
+			<div class="buttondiv">
+				<input type="submit" value="发布咯！" />
+			</div>
+		</form>
+	[/#if]
+	
+</div>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="ActivitySchool"
+		table="activity_school"
+	>
+		<meta attribute="sync-DAO">false</meta>
+
+		<meta attribute="sync-DAO">false</meta>
+
+		<id
+			name="Id"
+			type="integer"
+			column="sc_id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="ScName"
+			column="sc_name"
+			type="string"
+			not-null="false"
+			length="255"
+		/>
+		<many-to-one
+			name="Districk"
+			column="districk_id"
+			class="ActivityDistrick"
+			not-null="false"
+		>
+		</many-to-one>
+
+
+	</class>	
+</hibernate-mapping>

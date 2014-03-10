@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="ActivityLive"
+		table="activity_live"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="string"
+			column="live_id"
+		>
+			<generator class="assigned"/>
+		</id>
+
+		<property
+			name="LiveActivity"
+			column="live_activity"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="LiveUser"
+			column="live_user"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="LiveContent"
+			column="live_content"
+			type="string"
+			not-null="false"
+			length="140"
+		/>
+		<property
+			name="LiveImgs"
+			column="live_imgs"
+			type="string"
+			not-null="false"
+			length="300"
+		/>
+		<property
+			name="LiveDate"
+			column="live_date"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+
+
+	</class>	
+</hibernate-mapping>

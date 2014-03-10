@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<meta http-equiv="X-UA-Compatible" content="IE=7" />
+<title>乐喔网-创造我们的生活 www.lwall.net</title>
+<link href="/${res}/css/index_new.css" rel="stylesheet" type="text/css"/> 
+<script type="text/javascript" src="${base}/thirdparty/poshytip-1.1/demo/includes/jquery-1.4.2.min.js"></script>
+<meta http-equiv="keywords" content=""/>
+<meta http-equiv="description" content=""/>
+<script>
+$(function(){
+	$(".team_wall_panel").mouseover(function(){
+		$(this).children(".team_wall_float").show();
+		$(this).children(".team_member_panel_float").show();
+		$(this).children(".team_member_panel").show();
+		$(this).children(".team_button_panel").show();
+		$(this).children(".team_tag_panel").show();
+		$(this).children(".team_button_panel_float").show();
+		$(this).children(".team_info_panel").hide();
+		$(this).children(".team_fans_panel").hide();
+	}).mouseout(function(){
+		$(this).children(".team_wall_float").hide();
+		$(this).children(".team_member_panel_float").hide();
+		$(this).children(".team_member_panel").hide();
+		$(this).children(".team_button_panel").hide();
+		$(this).children(".team_tag_panel").hide();
+		$(this).children(".team_button_panel_float").hide();
+		$(this).children(".team_info_panel").show();
+		$(this).children(".team_fans_panel").show();
+	});   
+});
+</script>
+</head>
+
+<body>
+<div class="container">
+	[#include "首页_head.html"/]
+	[#include "../include/用户信息.html"/]
+	<div class="mainbody-box">
+		<div class="mainbody-box-main1">
+			<a href="${base}/championwall.jhtml" class="sy-btnct1"></a>
+			<a href="${base}/" class="sy-btnct2"></a>
+			<a href="${base}/teamwall.jhtml" class="sy-btnct3"></a>
+			<a href="#" class="sy-btnct4"></a>
+		</div>
+		<div class="mainbody-box-main2">
+			<div class="mainbody-main2-con1">
+				<table>
+					<tr>
+						<td class="index-gg">网站公告:<a href="#">热烈庆祝乐窝喔网站开通！</a></td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+			<div class="team_mainbody-main2-con2">
+				[#if error??]
+					${error}
+				[/#if]
+				[#if teamList??]
+					[#assign i=1]
+					[#list teamList as team]
+						<div class="team_wall_panel color${i}">
+							<img src="${base}${team.acUserTeamExt.teamLogo!}" onerror="this.src='/${res}/images/team.gif'" width="156" height="159" />
+							<div class="team_wall_float taem_wall_position"></div>
+							<div class="team_button_panel taem_wall_position">
+								[#if team.canAttention=1]
+									[#if user??]
+										[#if user.id=team.teamCreateuser]
+										[#else]
+											<span class="attention_btn btn" name="${team.id}" >
+												<img src="/${res}/image/add.png"/><span>&nbsp;关注</span>
+											</span>
+										[/#if]
+									[#else]
+										<span class="attention_btn btn" name="${team.id}" >
+											<img src="/${res}/image/add.png"/><span>&nbsp;关注</span>
+										</span>
+									[/#if] 
+								[#else]
+									<span class="un_attention_btn btn" name="${team.id}" >
+										<span>&nbsp;已关注</span>
+									</span> 
+								[/#if] 
+								[#if team.canJoin=1]
+									[#if team.teamApplyallow=1]
+										[#if user??]
+											[#if user.id=team.teamCreateuser]
+											[#else]
+												<span class="apply_btn btn" name="${team.id}" ><img src="/${res}/image/add.png"/><span>&nbsp;申请加入</span></span>
+											[/#if]
+										[#else]
+											<span class="apply_btn btn" name="${team.id}" ><img src="/${res}/image/add.png"/><span>&nbsp;申请加入</span></span>
+										[/#if]
+									[/#if]
+								[#else]
+									[#if team.canJoin=0]
+										<span class="un_attention_btn btn" name="${team.id}" ><span>&nbsp;已加入</span></span>
+									[/#if]
+									[#if team.canJoin=2]
+										<span class="un_attention_btn btn" name="${team.id}" ><span>&nbsp;邀请你加入</span></span>
+									[/#if]
+									[#if team.canJoin=3]
+										<span class="un_attention_btn btn" name="${team.id}" ><span>&nbsp;已发送申请</span></span>
+									[/#if]
+									[#if team.canJoin=4]
+										<span class="un_attention_btn btn" name="${team.id}" ><span>&nbsp;你被禁用</span></span>
+									[/#if]
+									[#if team.canJoin=5]
+										<span class="un_attention_btn btn" name="${team.id}" ><span>&nbsp;申请被忽略</span></span>
+									[/#if] 
+								[/#if] 
+								[#if user??]
+									[#if user.id=team.teamCreateuser]
+									[#else]
+										<span class="flower_btn btn" name="${team.id}" ><img src="/${res}/images/flower.gif" width="16" height="21" title="献花"/></span>
+										<span class="egg_btn btn" name="${team.id}" ><img src="/${res}/images/Egg.png" width="14" height="16" title="仍鸡蛋"/></span>
+									[/#if]
+								[#else]
+									<span class="flower_btn btn" name="${team.id}" ><img src="/${res}/images/flower.gif" width="16" height="21" title="献花"/></span>
+									<span class="egg_btn btn" name="${team.id}" ><img src="/${res}/images/Egg.png" width="14" height="16" title="仍鸡蛋"/></span>
+								[/#if] 
+							</div>
+							<div class="team_button_panel_float taem_wall_position"></div>
+							<div class="team_member_panel taem_wall_position">
+								<span>创建人：<a class="person_info_alert" rel="${team.teamCreateuser!}_normal" href="javascript:void(0)" >${team.teamCreateusername!}</a> </span>
+								[#if team.members??]
+									<span><a href="javascript:void(0)" class="team_member_info_alert" rel="${team.id!}_normal" >成员</a>：${team.members?size}人 </span>
+								[/#if]
+							</div>
+							<div class="team_tag_panel taem_wall_position">
+							 <span class="tag_box">关注&nbsp;${team.acUserTeamExt.teamFans!}</span>
+							 <span class="tag_box">鲜花&nbsp;${team.acUserTeamExt.teamFlowers!}</span>
+							 <span class="tag_box">鸡蛋&nbsp;${team.acUserTeamExt.teamEggs!}</span>
+							 <div style="clear:both;"></div>
+								[#if team.tags??]
+									[#list team.tags as tag]
+										<span class="tag_box">${tag.tagName!}</span>
+									[/#list]
+								[/#if] 
+							</div>
+							<div class="team_member_panel_float taem_wall_position"></div>
+							<div class="team_info_panel taem_wall_position">
+								<span>${team.teamName!}&nbsp;Lv${team.teamLevel!}</span>
+							</div>
+							<div class="team_fans_panel taem_wall_position">
+								<!-- <span>关注&nbsp;${team.acUserTeamExt.teamFans!}&nbsp;鲜花&nbsp;${team.acUserTeamExt.teamFlowers!}&nbsp;鸡蛋&nbsp;${team.acUserTeamExt.teamEggs!}</span> -->
+							</div>
+						</div>
+						[#assign i=(i+1)%9]
+					[/#list]
+				[/#if] 
+			</div>
+		</div>
+		<div class="mainbody-box-main3">
+			[#include "签到.html"/] 
+			<a href="${base}/activity/index/4.jhtml" class="sy-btnct6"></a>
+			<a href="${base}/dreamwall.jhtml" class="sy-btnct7"></a>
+		</div>
+	</div>
+	[#include "首页_foot.html"/]
+</div>
+</body>
+</html>

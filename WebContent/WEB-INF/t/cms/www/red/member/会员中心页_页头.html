@@ -1,0 +1,142 @@
+<script>
+$(function(){
+	$(".letter").click(function(){
+		$(".member_letter_wrap").show();
+		$(".member_friend_wrap").hide();
+		$(".member_letter_wrap").children(".loading").fadeIn(function(){
+			//ajax请求当前邀请消息
+			$.getJSON("${base}/member/acceptconfirm.jspx",{random:Math.random()},function(json){
+				if(json.error==0){
+					alert("你尚未登录，请登录！");
+				}else if(json.error==1){
+					$(".member_letter_wrap").html("");
+					$("<div style='margin-bottom:5px;'>你已经处理完所有的消息了&nbsp;&nbsp;<a href='javascript:void(0)'>查看历史</a>&nbsp;&nbsp;<a href='javascript:void(0)' class='close_letter_message'>关闭</a></div>").appendTo(".member_letter_wrap");
+				}else if(json.error==2){
+					alert("当前团队异常或者已被删除")
+				}else if(json.error==null&&json!=null){
+					$(".member_letter_wrap").html(""); 
+					for(var i=0;i<json.length;i++){
+						$(getSendingPanel(decodeURI(json[i].teamname),decodeURI(json[i].createusername),json[i].createuser,json[i].teamlogo,json[i].teamid,decodeURI(json[i].userduty))).appendTo(".member_letter_wrap").fadeIn();
+					}
+					$("<div class='close_letter_message'><a href='javascript:void(0)'>关闭</a></div>").appendTo(".member_letter_wrap");
+				}
+			});
+		});
+		
+		//得到邀请信息panel
+		function getSendingPanel(teamname,createusername,createuser,teamlogo,teamid,userduty){
+			var html="";
+			html+='<div class="team_panel_alert"><img src="${base}/circle'+teamlogo+'" width="48" height="48" />';
+			html+='<div>';
+			html+='<span>用户<a href="#">'+createusername+'</a>邀请你加入他们的团队<a href="#">'+teamname+'</a>&nbsp;你的称号是：'+userduty+'</span>';
+			html+='<span id="teamid'+teamid+'"><img src="/${res}/image/accept_btn.jpg" width="70" class="acc_btn" /><img src="/${res}/image/reject_btn.jpg" width="70" class="rej_btn" /></span>';
+			html+='</div>';
+			html+='</div>';
+			return html;
+		}
+	});
+	
+	$(".close_letter_message").live("click",function(){
+		$(".member_letter_wrap").hide();
+	});
+	
+	$(".close_message").live("click",function(){
+		$(this).parent().hide();
+	});
+	
+	//接受邀请
+	$(".acc_btn").live("click",function(){
+		var teamid=$(this).parent().attr("id").substring(6);
+		tmp=$(this).parent();
+		$.post("${base}/member/acceptinvite.jspx",{"teamid":teamid},function(data){
+			if(data=="0"){
+				alert("你还没登录 请先登录！");
+			}else if(data=="1"){
+				alert("对不起 未找到该团队 向你发送的邀请！");
+			}else if(data=="2"){
+				alert("你已接受该团队的邀请！");
+				location.reload();
+			}else{
+				alert("error:对不起，程序异常！");
+			}
+		});
+	});
+	var lookFlag=0;
+	//查看好友申请
+	$(".friend").click(function(){
+		$(".member_friend_wrap").show();
+		$(".member_letter_wrap").hide();
+		if(lookFlag==0){
+			lookFlag=1;
+			$(".member_friend_wrap").children(".loading").fadeIn(function(){
+				//ajax请求当前好友邀请
+				$.getJSON("${base}/member/friendapplyinfo.jspx",{random:Math.random()},function(json){ 
+					if(json.error==0){
+						alert("你尚未登录，请登录！");
+					}else if(json.error==1){
+						$(".member_friend_wrap").html(""); 
+						$(".member_friend_wrap").text("还没找到好友申请！");
+						$("<div class='close_message'><a href='javascript:void(0)'>关闭</a></div>").appendTo(".member_friend_wrap");
+					}else if(json.error==null&&json!=null){
+						$(".member_friend_wrap").html(""); 
+						for(var i=0;i<json.length;i++){
+							var html="";
+							html+="<div class='member_friend_user_wrap'><img style='float:left;' src='${base}"+json[i].userimg+"' width='38' height='38' />";
+							html+="<span>&nbsp;&nbsp;<a href='#' name='"+json[i].userid+"' class='userinfo' >"+decodeURI(json[i].username)+"</a><br/>&nbsp;&nbsp;加你为好友</span>";
+							html+="<div class='member_friend_user_btn'><a href='javascript:void(0)' class='act_friend_btn' name='"+json[i].userid+"' >接受</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)'>忽略</a></div></div>";
+							$(html).appendTo(".member_friend_wrap");
+						}
+						$("<div style='clear:both;'></div><div class='close_message'><a href='javascript:void(0)'>关闭</a></div>").appendTo(".member_friend_wrap");
+					}else{
+						alert("error:程序异常！！");
+					}
+				});
+			});
+		} 
+	});
+	//接受好友申请
+	$(".act_friend_btn").live("click",function(){
+		$.post("${base}/member/ajaxfriendaccept.jspx",{"applyUserId":$(this).attr("name")},function(data){
+			if(data=="0"){
+				alert("你还没登录 请先登录！");
+				location.reload();
+			}else if(data=="1"){
+				alert("接受成功！");
+				location.reload();
+			}else if(data=="2"){
+				alert("好友申请不存在或者已经处理过了！");
+				location.reload();
+			}else{
+				alert("error:对不起，程序异常！");
+			}
+		});
+	});
+});
+</script>
+
+<div style="height:65px;width:100%;"></div>
+<div class="head">
+	<div class="head_wrap">
+		<div class="logo" onclick="location='${base}/'"></div>
+		
+		<div class="buttons_panel">
+			<ul>
+				<li class="home" title="返回首页" onclick="location='${base}/member/index.jspx'" >
+					<img alt="" src="/${res}/image/linkhome.gif">
+				</li>
+				<li class="pub" title="创建团队" onclick="location='createteam.jspx'" ></li>
+				<li class="letter" title="消息"></li>
+				<li class="seting" title="设置" onclick="location='profile.jspx'" ></li>
+				<li class="friend" title="好友申请" ></li>
+				<li class="exit" title="退出" onclick="location='${base}/logout.jspx?returnUrl=/'" ></li>
+			</ul>
+			<div style="clear:both;"></div>
+			<div class="member_letter_wrap">
+				<img src="/${res}/image/loading.gif" class="loading" /> 
+			</div>
+			<div class="member_friend_wrap">
+				<img src="/${res}/image/loading.gif" class="loading" /> 
+			</div>
+		</div>
+	</div>
+</div>

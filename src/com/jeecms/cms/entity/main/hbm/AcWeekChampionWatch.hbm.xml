@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="AcWeekChampionWatch"
+		table="ac_week_champion_watch"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="string"
+			column="watch_id"
+		>
+			<generator class="assigned"/>
+		</id>
+
+		<property
+			name="WatchTime"
+			column="watch_time"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+		<property
+			name="WatchUser"
+			column="watch_user"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="ChampionId"
+			column="champion_id"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="WatchUserName"
+			column="watch_user_name"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+		<property
+			name="WatchUserImg"
+			column="watch_user_img"
+			type="string"
+			not-null="false"
+			length="200"
+		/>
+
+
+	</class>	
+</hibernate-mapping>

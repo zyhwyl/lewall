@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+});
+</script>
+</head>
+<body>
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: 国家管理 - <@s.m "global.list"/></div>
+	<form class="ropt">
+		<@cms_perm url="/content/v_add.do">
+		<input class="add" type="submit" value="<@s.m "global.add"/>" onclick="this.form.action='country_add.do';"/>
+		</@cms_perm>
+		<input type="hidden" name="cid" value="${cid!}"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+	<@p.table value=pagination;country,i,has_next><#rt/>
+		<@p.column title="<input type='checkbox' onclick='Pn.checkbox(\"ids\",this.checked)'/>" width="20">
+			<input type='checkbox' name='ids' value='${country.id}'/><#t/>
+		</@p.column><#t/>
+		<@p.column width="118" title="编号">${country.id}</@p.column><#t/>
+		<@p.column width="340" code="国家名称">&nbsp;&nbsp;${country.countryName!}</@p.column><#t/> 
+		<@p.column code="global.operate" align="center">
+			<a href="country_edit.do?id=${country.id}&pageNo=${pageNo!}" class="pn-opt">查看详情</a> | <#rt/>
+			<a href="country_delete.do?ids=${country.id}&pageNo=${pageNo!}" onclick="if(!confirm('<@s.m "global.confirm.delete"/>')) {return false;}" class="pn-opt"><@s.m "global.delete"/></a><#t/>
+		</@p.column><#t/>
+	</@p.table>
+</div>
+
+</body>
+</html>

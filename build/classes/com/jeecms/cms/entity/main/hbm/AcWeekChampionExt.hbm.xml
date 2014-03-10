@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="AcWeekChampionExt"
+		table="ac_week_champion_ext"
+	>
+		<meta attribute="sync-DAO">false</meta> 
+		<id name="id" type="java.lang.Integer" column="champion_id">
+			<generator class="foreign"><param name="property">AcWeekChampion</param></generator>
+		</id>
+		<property
+			name="ChampionLogo"
+			column="champion_logo"
+			type="string"
+			not-null="false"
+			length="200"
+		/>
+		<property
+			name="ChampionDesc"
+			column="champion_desc"
+			type="string"
+			not-null="false"
+			length="1000"
+		/>
+
+		<one-to-one
+			class="AcWeekChampion"
+			constrained="true"
+			name="AcWeekChampion"
+		 /> 
+	</class>
+</hibernate-mapping>

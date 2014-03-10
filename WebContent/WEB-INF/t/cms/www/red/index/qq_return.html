@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<meta http-equiv="X-UA-Compatible" content="IE=7" /> 
+<title>乐喔网-创造我们的生活 www.lwall.net</title>
+<script src="${resSys}/jquery.js" type="text/javascript"></script>
+<script type="text/javascript" src="http://qzonestyle.gtimg.cn/qzone/openapi/qc_loader.js" data-appid="100361173" data-redirecturi="http://www.localtest.com/cms/connect/qq/callback.jspx" charset="utf-8"></script>
+<script type="text/javascript" src="http://qzonestyle.gtimg.cn/qzone/openapi/qc_loader.js" charset="utf-8" data-callback="true"></script> 
+
+<script>
+if(QC.Login.check()){//如果已登录
+	QC.Login.getMe(function(openId, accessToken){
+		$("input[name='openId']").val(openId); 
+	});
+	//这里可以调用自己的保存接口 
+	//从页面收集OpenAPI必要的参数。get_user_info不需要输入参数，因此paras中没有参数
+	var paras = {};
+
+	//用JS SDK调用OpenAPI
+	QC.api("get_user_info", paras)
+		//指定接口访问成功的接收函数，s为成功返回Response对象
+		.success(function(s){
+			//成功回调，通过s.data获取OpenAPI的返回数据 
+			if(s.data.gender=="男"){
+				$("input[name='gender']").val(1);
+			}else if(s.data.gender=="女"){
+				$("input[name='gender']").val(0);
+			}else{
+				$("input[name='gender']").val(1);
+			}
+			//注销qq登录 
+			QC.Login.signOut();
+			
+			$("#form1").submit();
+		})
+		//指定接口访问失败的接收函数，f为失败返回Response对象
+		.error(function(f){
+			//失败回调
+			alert("获取用户信息失败！");
+		})
+		//指定接口完成请求后的接收函数，c为完成请求返回Response对象
+		.complete(function(c){
+			//完成请求回调
+		}); 
+}
+</script>
+</head>
+
+<body>
+<form action="${base}/connect/qq/qqlogin.jspx" id="form1">
+	<input type="hidden" value="" name="openId" /> 
+	<input type="hidden" value="" name="gender" />
+</form>
+</body>
+</html>

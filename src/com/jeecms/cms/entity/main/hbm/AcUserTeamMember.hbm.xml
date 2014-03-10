@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="AcUserTeamMember"
+		table="ac_user_team_member"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="string"
+			column="aut_id"
+		>
+			<generator class="assigned"/>
+		</id>
+		<property
+			name="AutTeamid"
+			column="aut_teamid"
+			type="integer"
+			not-null="true"
+			length="10"
+		/>
+		<property
+			name="AutUserid"
+			column="aut_userid"
+			type="integer"
+			not-null="true"
+			length="10"
+		/>
+		<property
+			name="AutDuty"
+			column="aut_duty"
+			type="string"
+			not-null="false"
+			length="30"
+		/>
+		<property
+			name="AutJointime"
+			column="aut_jointime"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+		<property
+			name="AutSendingtime"
+			column="aut_sendingtime"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+		<property
+			name="AutState"
+			column="aut_state"
+			type="integer"
+			not-null="false"
+			length="4"
+		/>
+		<property
+			name="AutCanpub"
+			column="aut_canpub"
+			type="integer"
+			not-null="false"
+			length="1"
+		/>
+		<property
+			name="AutUserimg"
+			column="aut_userimg"
+			type="string"
+			not-null="false"
+			length="200"
+		/>
+		<property
+			name="AutUsername"
+			column="aut_username"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+
+
+	</class>	
+</hibernate-mapping>

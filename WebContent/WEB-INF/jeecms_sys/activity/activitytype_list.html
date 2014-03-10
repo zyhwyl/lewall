@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+});
+</script>
+</head>
+<body>
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: 活动类型管理 - <@s.m "global.list"/></div>
+	<form class="ropt">
+		<@cms_perm url="/content/v_add.do">
+		<input class="add" type="submit" value="<@s.m "global.add"/>" onclick="this.form.action='activitytype_add.do';"/>
+		</@cms_perm>
+		<input type="hidden" name="cid" value="${cid!}"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+	<@p.table value=pagination;activitytype,i,has_next><#rt/>
+		<@p.column title="<input type='checkbox' onclick='Pn.checkbox(\"ids\",this.checked)'/>" width="20">
+			<input type='checkbox' name='ids' value='${activitytype.id}'/><#t/>
+		</@p.column><#t/>
+		<@p.column width="60" title="编号">${activitytype.id}</@p.column><#t/>
+		<@p.column width="160" code="学校名称">&nbsp;&nbsp;${activitytype.atName!}</@p.column><#t/> 
+		<@p.column width="160" code="创建时间">&nbsp;&nbsp;${activitytype.atCreatedate!}</@p.column><#t/> 
+		<@p.column width="160" code="创建人 ">&nbsp;&nbsp;${activitytype.atUserid!}</@p.column><#t/> 
+		<@p.column width="160" code="状态 ">&nbsp;&nbsp;<#if activitytype.atState=1>启用<#else><span style="color:red;">已禁用</span></#if></@p.column><#t/> 
+		<@p.column code="global.operate" align="center">
+			<a href="activitytype_edit.do?id=${activitytype.id}&pageNo=${pageNo!}" class="pn-opt">查看详情</a> | <#rt/>
+			<a href="activitytype_delete.do?ids=${activitytype.id}&pageNo=${pageNo!}" onclick="if(!confirm('<@s.m "global.confirm.delete"/>')) {return false;}" class="pn-opt"><@s.m "global.delete"/></a><#t/>
+		</@p.column><#t/>
+	</@p.table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>乐喔网--www.lwall.net</title>
+<meta http-equiv="keywords" content=""/>
+<meta http-equiv="description" content=""/>
+<script>
+	function go(){
+		window.location="${base}/activity/index/4.jhtml";
+	}	 
+	setTimeout(go,2000);
+</script>
+<style>
+		body{text-align:center;}
+		.block_wrap{margin:0 auto;}
+		.block{width:260px;border:solid 1px silver;padding:2px;margin:0 auto;}
+		.addpicbutton{width:98%;border:solid 1px silver;margin:0 auto;height:40px;cursor:pointer;}
+		.desc{width:260px;border:solid 1px silver;border-top:none;padding:2px;margin:0 auto;}
+		.desc textarea{border:none;}
+		.tag{width:260px;border:solid 1px silver;border-top:none;padding:2px;margin:0 auto;}
+		.tagdiv{width:82px;height:30px;float:left;background:green;margin:2px 0 0 2px;filter:alpha(opacity=0);-moz-opacity:0;-khtml-opacity:0;opacity:0;}
+		.unselectschool{padding:2px;color:#ccc;width:70px;height:25px;margin:0 auto;cursor:pointer;}
+		.selectschool{padding:2px;color:#ccc;width:70px;height:25px;margin:0 auto;cursor:pointer;color:black;font-weight:bold;}
+		.signrestrick input{width:50px;}
+		.buttondiv{}
+</style>
+</head>
+<body>
+<div class="block_wrap">
+	[#if error??]
+		<span>${error!}</span>
+	[#else]
+		发布成功！<a href="#" onclick="location='${base}/activity/index/4.jhtml'">去看看</a> 
+	[/#if] 
+</div> 
+</body>
+</html>

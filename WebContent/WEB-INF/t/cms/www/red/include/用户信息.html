@@ -1,0 +1,177 @@
+<link rel="stylesheet" href="${base}/thirdparty/poshytip-1.1/src/tip-violet/tip-violet.css" type="text/css" />
+<script type="text/javascript" src="${base}/thirdparty/poshytip-1.1/src/jquery.poshytip.js"></script> 
+<style>
+.user_alert_normal{float:left;background:#f2e7fd;width:100%;margin-left:-5px;padding:0 5px;}
+.user_alert_normal .user_big_photo{float:left;}
+.user_alert_normal .user_info_ul{float:left;width:150px;margin-left:5px;}
+.user_alert_normal .user_info_ul li{margin-top:2px;font-weight:normal;color:black;}
+.user_alert_normal .user_info_ul li a{font-weight:bold;color:#2975E8}
+.user_alert_btn{width:99%;height:30px;}
+.add_friend_btn{cursor:pointer;font-size:12px;color:green;width:22px;height:24px;background:url(/${res}/images/btn/card_btn.gif) no-repeat;display:block;float:left;margin:3px 0 0 5px;}
+.add_friend_btn:HOVER{background:url(/${res}/images/btn/card_btn_light.gif) no-repeat;}
+.gift_btn{position:relative;top:7px;cursor:pointer;color:green;left:6px;}
+.little_btn{position:relative;top:7px;cursor:pointer;color:green;left:6px;}
+.normal_btn{position:relative;top:7px;cursor:pointer;color:green;left:6px;}
+
+.member_alert_panel img{float:left;margin-right:3px;width:60px;height:60px;}
+.member_alert_panel{font-weight:normal;color:black;background:#f2e7fd;}
+.team_member_alert_normal{background:#f2e7fd;}
+</style>
+
+<script>
+$(function(){  
+	//接受好友申请
+	$(".act_friend_btn").live("click",function(){
+		$.post("${base}/member/ajaxfriendaccept.jspx",{"applyUserId":$(this).attr("name")},function(data){
+			if(data=="0"){
+				getLoginPanel();
+				location.reload();
+			}else if(data=="1"){
+				getMessagePanel("消息","好友添加成功！");
+				location.reload();
+			}else if(data=="2"){
+				getMessagePanel("消息","好友申请不存在或者已经处理过了！");
+				location.reload();
+			}else{
+				getMessagePanel("消息","error:对不起，程序异常！");
+			}
+		});
+	});
+	
+	//添加好友
+	$(".add_friend_btn").live("click",function(){ 
+		[#if user??]
+			 var applyId=$(this).attr("name");
+			 var $tmp=$(this);
+			 //发送好友申请
+			 $.post("${base}/member/ajaxfriendapply.jspx",{"applyUserId":applyId},function(result){ 
+				 if(result=="0"){
+					 getLoginPanel();
+				 }else if(result=="1"){
+					 $tmp.text("已发送...");
+				 }else if(result=="2"){
+					 getMessagePanel("消息","传入要申请好友的用户！");
+				 }else if(result=="3"){
+					 getMessagePanel("消息","不能添加自己为好友！");
+				 }else{
+					 getMessagePanel("消息","error：程序错误！！")
+				 }
+			 });
+		[#else]
+			
+		[/#if]
+	}); 
+	var userInfoCache = {};
+	$(".person_info_alert").poshytip({
+		className: 'tip-violet',
+		alignTo: 'target',
+		alignX: 'inner-left',
+		alignY: 'bottom',
+		offsetX: -5,
+		offsetY: 13,
+		fade: false,
+		slide: false,
+		content:function(updateCallback){
+			var param=$(this).attr("rel").split("_"); 
+			var userid=param[0]; 
+			$.getJSON("${base}/activity/getuserdate.jhtml",{"userId":userid,random:Math.random()},function(json){
+				var container=$('<div/>').addClass('user_alert_'+param[1]);
+				var pubactivity="";
+				for(var i=0;i<json.length;i++){
+					if(json[i].typeflag=="0"){
+						var photoSrc="${base}"+json[i].userimg.replace("//","/thumb/");
+						var html='<img src="'+photoSrc+'" class="user_big_photo" />';
+						html+='<ul class="user_info_ul" name="'+userid+'" >';
+						html+='<li><a href="#">'+decodeURI(json[i].username)+'</a>&nbsp;&nbsp;'+decodeURI(json[i].userlv);
+						html+='</li>';
+						html+='<li>学校:'+decodeURI(json[i].userschool);
+						html+='</li>';
+						html+='<li>创建团队:'+json[i].createCount+"&nbsp;加入团队:"+json[i].joinCount;
+						html+='</li>';
+						html+='<li>发布活动:'+json[i].pubCount;
+						html+='</li>'; 
+						if(pubactivity!=""){
+							html+='<li>'+pubactivity;
+							html+='</li>'; 
+						}
+						if(json[i].error=="1"){ 
+							html+="<li>该用户还没发布活动额！</li>";
+						}
+						if(json[i].error=="2"){ 
+							html+="<li>该用户发布的活动都已经结束了！去看看</li>";
+						}
+						html+='</ul><div style="clear:both"></div>'; 
+						[#if user??]
+						html+='<div class="user_alert_btn">'; 
+						if(json[i].nofriend=="1"){ 
+							html+='<a class="add_friend_btn" name="'+userid+'" title="加好友" >&nbsp;</a>';
+							html+='&nbsp;&nbsp;<a class="greet_btn little_btn" name="'+userid+'" >打招呼</a>'; 
+						}
+						if(json[i].friendapply=="0"){
+							html+='<span class="act_friend_btn" name="'+userid+'" >接受好友申请</span>';
+							html+='&nbsp;&nbsp;<span class="greet_btn little_btn" name="'+userid+'" >打招呼</span>'; 
+						}
+						if(json[i].friendapply=="1"){ 
+							html+='<span class="normal_btn" name="'+userid+'" >已是好友</span>'; 
+							html+='&nbsp;&nbsp;<span class="gift_btn little_btn" name="'+userid+'" >送礼物</span>'; 
+							html+='&nbsp;&nbsp;<span class="message_btn little_btn" name="'+userid+'" >私信</span>'; 
+						}
+						if(json[i].friendreceive=="0"){ 
+							html+='<span class="normal_btn" name="'+userid+'" >已发送..</span>';
+							html+='&nbsp;&nbsp;<span class="greet_btn little_btn" name="'+userid+'" >打招呼</span>'; 
+						}
+						if(json[i].friendreceive=="1"){ 
+							html+='<span class="normal_btn" name="'+userid+'" >已是好友</span>';
+							html+='&nbsp;&nbsp;<span class="gift_btn little_btn" name="'+userid+'" >送礼物</span>'; 
+							html+='&nbsp;&nbsp;<span class="message_btn little_btn" name="'+userid+'" >私信</span>'; 
+						}   
+						html+="</div>";
+						[/#if]
+						$(html).appendTo(container);
+					}else{
+						pubactivity="测试";
+					}
+				}
+				updateCallback(container);
+			});
+
+			return 'Loading...';
+		}
+	});
+	
+	//团队成员资料卡
+	$(".team_member_info_alert").poshytip({
+		className: 'tip-violet',
+		alignTo: 'target',
+		alignX: 'inner-left',
+		alignY: 'bottom',
+		offsetX: -5,
+		offsetY: 13,
+		fade: false,
+		slide: false,
+		content:function(updateCallback){
+			var param=$(this).attr("rel").split("_"); 
+			var teamId=param[0]; 
+			$.getJSON("${base}/activity/getteammember.jhtml",{"teamid":teamId,random:Math.random()},function(json){
+				var container=$('<ul/>').addClass('team_member_alert_'+param[1]);
+ 
+				for(var i=0;i<json.length;i++){
+					if(json[i].error=="1"){
+						$("<li>对不起，未能找到该团队已经加入的成员</li>").appendTo(container);
+					}else{
+						var html="<li>";
+						html+='<div class="member_alert_panel"><img src="'+json[i].userimg.replace("//","/corner/")+'" onerror="this.src=\'/${res}/images/user_pic/user_pic_middle.gif\'" />';
+						html+='&nbsp;<a href="#" >'+decodeURI(json[i].username)+'</a><br/>&nbsp;'+decodeURI(json[i].userlv)+'<br/>';
+						html+='&nbsp;职位:'+decodeURI(json[i].userduty)+'</div><div style="clear:both;"></div></li>';
+						$(html).appendTo(container);
+					}
+				}
+				updateCallback(container);
+			});
+
+			return 'Loading...';
+		}
+	});
+	
+});
+</script>

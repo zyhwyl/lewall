@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="ActivityJoin"
+		table="activity_join"
+	>
+		<meta attribute="sync-DAO">false</meta> 
+
+		<id
+			name="Id"
+			type="string"
+			column="aj_id"
+		>
+			<generator class="assigned"/>
+		</id>
+
+		<property
+			name="AjJointime"
+			column="aj_jointime"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+		<property
+			name="AjUsername"
+			column="aj_username"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+		<property
+			name="AjUserimg"
+			column="aj_userimg"
+			type="string"
+			not-null="false"
+			length="200"
+		/>
+		<property
+			name="AjState"
+			column="aj_state"
+			type="integer"
+			not-null="false"
+			length="3"
+		/>
+		<property
+			name="AjTeam"
+			column="aj_team"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="AjIsanonymous"
+			column="aj_isanonymous"
+			type="integer"
+			not-null="false"
+			length="3"
+		/>
+		<property
+			name="AjWords"
+			column="aj_words"
+			type="string"
+			not-null="false"
+			length="140"
+		/>
+		<property
+			name="AjActivityid"
+			column="aj_activityid"  
+			type="integer" 
+		>
+		</property>
+		<property
+			name="AjUserid"
+			column="aj_userid"
+			type="integer" 
+		>
+		</property>
+
+
+	</class>	
+</hibernate-mapping>

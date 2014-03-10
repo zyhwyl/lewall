@@ -1,0 +1,408 @@
+[#include "../include/信息完善验证页.html"/]
+<script type="text/javascript" src="http://qzonestyle.gtimg.cn/qzone/openapi/qc_loader.js" data-appid="100361173" data-redirecturi="http://www.lwall.net/connect/qq/callback.jspx" charset="utf-8"></script> 
+<link id="artDialog-skin" href="${base}/thirdparty/artDialog/skins/aero.css" rel="stylesheet" />
+<script src="${base}/thirdparty/artDialog/source/artDialog.js" type="text/javascript"></script> 
+
+<script> 
+$(function(){
+	function getLoginPanel(){
+		art.dialog({
+			title: '消息',
+		    content: '请先登录！'
+		});
+	}
+	function getMessagePanel(title,content){
+		art.dialog({
+			title: title,
+		    content: content
+		});
+	}
+	$(".person_back").click(function(){
+		$(this).children(".info_panel").fadeIn();
+		$(this).siblings().children(".info_panel").hide(200);
+		var $tmpPubPanel=$(this).children(".info_panel").children(".user_big_photo").children(".user_pub_panel");
+		if($tmpPubPanel.html()==""){
+			//ajax加载用户发布活动的信息
+			var userid=$tmpPubPanel.attr("name");
+			$('<img src="/${res}/image/loading.gif" style="border:none;" />').appendTo($tmpPubPanel).fadeIn(function(){
+				$.getJSON("${base}/activity/getuserdate.jhtml",{"userId":userid,random:Math.random()},function(json){	
+					for(var i=0;i<json.length;i++){
+						if(json[i].typeflag=="0"){
+							if(json[i].error=="1"){
+								$tmpPubPanel.html("");
+								$("<span>该用户还没发布活动额！</span>").appendTo($tmpPubPanel);
+							}
+							if(json[i].error=="2"){
+								$tmpPubPanel.html("");
+								$("<span>该用户发布的活动都已经结束了！去看看</span>").appendTo($tmpPubPanel);
+							}
+							if(json[i].nofriend=="1"){
+								var html='<span class="add_friend_btn" name="'+userid+'" ><img src="/${res}/image/add.png"/>好友</span>';
+								getUserInfo(html,$tmpPubPanel)
+							}
+							if(json[i].friendapply=="0"){
+								var html='<span class="act_friend_btn" name="'+userid+'" >接受好友申请</span>';
+								getUserInfo(html,$tmpPubPanel)
+							}
+							if(json[i].friendapply=="1"){
+								var html='<span class="" name="'+userid+'" >已是好友</span>';
+								getUserInfo(html,$tmpPubPanel)
+							}
+							if(json[i].friendreceive=="0"){
+								var html='<span class="" name="'+userid+'" >已发送..</span>';
+								getUserInfo(html,$tmpPubPanel)
+							}
+							if(json[i].friendreceive=="1"){
+								var html='<span class="" name="'+userid+'" >已是好友</span>';
+								getUserInfo(html,$tmpPubPanel)
+							}
+						}else{
+							
+						}
+					}
+				});
+			});
+		}  
+	});
+	
+	function getUserInfo(html,$tmpPubPanel){
+		html=html+$tmpPubPanel.parent().siblings(".bottom_button_panel").html();
+		$tmpPubPanel.parent().siblings(".bottom_button_panel").html(html);
+	}
+	
+	//隐藏弹出框标识  
+	var hide_flag=0;
+	$(".info_panel").mouseover(function(){
+		hide_flag=0;
+	}).mouseout(function(){
+		var tmp=$(this);
+		hide_flag=1;
+		setTimeout(function(){
+			if(hide_flag==1){
+				tmp.hide(200); 
+			}
+		},1000);
+	});
+	
+	$(".message").mouseover(function(){
+		$(".message_wrap").fadeIn(function(){
+			//ajax请求当前邀请消息
+			$.getJSON("${base}/member/acceptconfirm.jspx",{random:Math.random()},function(json){
+				if(json.error==0){
+					getLoginPanel();
+				}else if(json.error==1){
+					getMessagePanel("消息","未找到相关邀请信息");
+				}else if(json.error==2){
+					getMessagePanel("消息","当前团队异常或者已被删除")
+				}else if(json.error==null&&json!=null){
+					$(".message_detail").html(""); 
+					for(var i=0;i<json.length;i++){
+						$(getSendingPanel(decodeURI(json[i].teamname),decodeURI(json[i].createusername),json[i].createuser,json[i].teamlogo,json[i].teamid,decodeURI(json[i].userduty))).appendTo(".message_detail").fadeIn();
+					}
+					$("<div class='close_message'><a href='javascript:void(0)' style='color:black;float:right;margin-right:20px;'>关闭</a></div>").appendTo(".message_detail");
+				}
+			});
+		});
+	});
+	
+	$(".close_message").live("click",function(){
+		$(".message_wrap").hide();
+	});
+	
+	//得到邀请信息panel
+	function getSendingPanel(teamname,createusername,createuser,teamlogo,teamid,userduty){
+		var html="";
+		html+='<div class="team_panel"><img src="${base}/circle'+teamlogo+'" width="48" height="48" />';
+		html+='<div class="team_text_wrap">';
+		html+='<span>用户<b>'+createusername+'</b>邀请你加入他们的团队<b>'+teamname+'</b>&nbsp;你的称号是：'+userduty+'</span>';
+		html+='<span id="teamid'+teamid+'"><img src="/${res}/image/accept_btn.jpg" width="70" class="acc_btn" style="float:left;" /><img src="/${res}/image/reject_btn.jpg" width="70" class="rej_btn" /></span>';
+		html+='</div>';
+		html+='</div>';
+		return html;
+	}
+	
+	//接受邀请
+	$(".acc_btn").live("click",function(){
+		var teamid=$(this).parent().attr("id").substring(6);
+		tmp=$(this).parent();
+		$.post("${base}/member/acceptinvite.jspx",{"teamid":teamid},function(data){
+			if(data=="0"){
+				getLoginPanel();
+			}else if(data=="1"){
+				getMessagePanel("消息","对不起 未找到该团队 向你发送的邀请！");
+			}else if(data=="2"){
+				getMessagePanel("消息","你已接受该团队的邀请！");
+				location.reload();
+			}else{
+				getMessagePanel("消息","error:对不起，程序异常！");
+			}
+		});
+	});
+	
+	//添加好友
+	$(".add_friend_btn").live("click",function(){
+		[#if user??]
+			 var applyId=$(this).attr("name");
+			 var $tmp=$(this);
+			 //发送好友申请
+			 $.post("${base}/member/ajaxfriendapply.jspx",{"applyUserId":applyId},function(result){
+				 if(result=="0"){
+					 getLoginPanel();
+				 }else if(result=="1"){
+					 $tmp.text("已发送...");
+				 }else if(result=="2"){
+					 getMessagePanel("消息","传入要申请好友的用户！");
+				 }else if(result=="3"){
+					 getMessagePanel("消息","不能添加自己为好友！");
+				 }else{
+					 getMessagePanel("消息","error：程序错误！！")
+				 }
+			 });
+		[#else]
+			
+		[/#if]
+	}); 
+	var checkFlag=0;
+	//签到
+	$(".checkin_btn").click(function(){  
+		[#if user??]
+			[#if user.isCheckinToday=1]	
+				checkFlag=1;
+			[/#if]
+		[/#if]
+		//禁止点击事件 
+		if(checkFlag==1){
+			return;
+		}
+		checkFlag=1;
+		[#if user??]
+			$(this).children("b").text("签到中.").css("color","#bbb");
+
+			var $tmp=$(this).children("b");
+			var i=1;
+			var checkAnimate=setInterval(function(){
+				if(i%3==0){
+					$tmp.text("签到中.");
+				}else if(i%3==1){
+					$tmp.text("签到中..");
+				}else if(i%3==2){
+					$tmp.text("签到中...");
+				}
+				i++;
+			},500);
+			setTimeout(function(){
+				$.get("${base}/activity/usercheckin.jspx",{},function(data){
+					if(data==0){
+						getLoginPanel();
+					}else if(data==1){
+						getMessagePanel("成功","签到成功，你的头像已经挂在首页啦！");
+						$tmp.parent().html("<b>签到成功</b><img src='/${res}/image/happy.jpg' />").children("b").css("color","#333");
+					}else if(data==2){
+						getMessagePanel("消息","签到失败，你今天已经签过了"); 
+						$tmp.parent().html("<b>签到失败</b><img src='/${res}/image/sad.jpg' />").children("b").css("color","#333");
+					}else{
+						alert("error：程序异常！！")
+					}
+					clearInterval(checkAnimate);
+				});
+			},3000); 
+		[#else]
+			getLoginPanel();
+		[/#if]
+	});
+	
+	var lookFlag=0;
+	//查看好友申请
+	$(".friendmessage").mouseover(function(){ 
+		$(".friendmessage_wrap").show();
+		if(lookFlag==0){
+			lookFlag=1;
+			$(".friendmessage_wrap").children(".loading").fadeIn(function(){
+				//ajax请求当前好友邀请
+				$.getJSON("${base}/member/friendapplyinfo.jspx",{random:Math.random()},function(json){ 
+					if(json.error==0){
+						getLoginPanel();
+					}else if(json.error==1){
+						$(".friendmessage_wrap").html(""); 
+						$(".friendmessage_wrap").text("还没找到好友申请！");
+						$("<div class='close_message'><a href='javascript:void(0)'>关闭</a></div>").appendTo(".friendmessage_wrap");
+					}else if(json.error==null&&json!=null){
+						$(".friendmessage_wrap").html(""); 
+						for(var i=0;i<json.length;i++){
+							var html="";
+							html+="<div class='member_friend_user_wrap'><img style='float:left;' src='${base}"+json[i].userimg+"' width='38' height='38' />";
+							html+="<span >&nbsp;<b style='color:#045063;' name='"+json[i].userid+"' class='userinfo' >"+decodeURI(json[i].username)+"</b><br/>&nbsp;加你为好友</span>";
+							html+="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b class='act_friend_btn' name='"+json[i].userid+"' >接受</b>&nbsp;&nbsp;&nbsp;&nbsp;<b href='javascript:void(0)' >忽略</b></div>";
+							$(html).appendTo(".friendmessage_wrap");
+						}
+						$("<div style='clear:both;'></div><div class='close_friend_message'><a style='color:#555;float:right;margin-right:10px;' href='javascript:void(0)'>关闭</a></div>").appendTo(".friendmessage_wrap");
+					}else{
+						getMessagePanel("消息","error:程序异常！！");
+					}
+					$(".close_friend_message").click(function(){
+						$(".friendmessage_wrap").hide();
+					});
+				});
+			});
+		} 
+	});
+	
+	//接受好友申请
+	$(".act_friend_btn").live("click",function(){
+		$.post("${base}/member/ajaxfriendaccept.jspx",{"applyUserId":$(this).attr("name")},function(data){
+			if(data=="0"){
+				getLoginPanel();
+				location.reload();
+			}else if(data=="1"){
+				getMessagePanel("消息","好友添加成功！");
+				location.reload();
+			}else if(data=="2"){
+				getMessagePanel("消息","好友申请不存在或者已经处理过了！");
+				location.reload();
+			}else{
+				getMessagePanel("消息","error:对不起，程序异常！");
+			}
+		});
+	});
+	[#if user??]
+		//关注该团队
+		var att_flag=0;
+		$(".attention_btn").click(function(){
+			var $tmp=$(this);
+			if(att_flag==0){
+				$.post("${base}/member/ajaxattendteam.jspx",{"teamId":$(this).attr("name")},function(data){
+					if(data=="0"){
+						getLoginPanel();
+					}else if(data=="1"){
+						$tmp.html("已关注");
+					}else if(data=="2"){
+						getMessagePanel("消息","当前团队不存在！");
+					}else if(data=="3"){
+						getMessagePanel("消息","不能关注自己创建的团队！");
+					}else if(data=="4"){
+						getMessagePanel("消息","你已经关注过了！");
+					}else{
+						getMessagePanel("消息","error:程序异常！");
+					}
+				})
+			}
+		}); 
+		//给该团队献花
+		$(".flower_btn").click(function(){
+			var $tmp=$(this);
+			$.post("${base}/member/ajaxflowerteam.jspx",{"teamId":$(this).attr("name"),"action":1},function(data){
+				if(data=="0"){
+					getLoginPanel();
+				}else if(data=="1"){
+					getMessagePanel("消息","成功，一个小时内，只能献花或砸蛋一次");
+				}else if(data=="2"){
+					getMessagePanel("消息","当前团队不存在！");
+				}else if(data=="3"){
+					getMessagePanel("消息","不能给自己创建的团队献花！");
+				}else if(data=="4"){
+					getMessagePanel("消息","对不起，一个小时内，只能献花或砸蛋一次");
+				}else{
+					getMessagePanel("消息","error:程序异常！");
+				}
+			})
+		});
+		//给该团队砸蛋
+		$(".egg_btn").click(function(){
+			var $tmp=$(this);
+			$.post("${base}/member/ajaxflowerteam.jspx",{"teamId":$(this).attr("name"),"action":0},function(data){
+				if(data=="0"){
+					getLoginPanel();
+				}else if(data=="1"){
+					alert("成功");
+				}else if(data=="2"){
+					alert("当前团队不存在！");
+				}else if(data=="3"){
+					alert("不能给自己创建的团队砸蛋！");
+				}else if(data=="4"){
+					alert("对不起，一个小时内，只能献花或砸蛋一次");
+				}else{
+					alert("error:程序异常！");
+				}
+			})
+		});
+	[#else]
+		$(".btn").click(function(){
+			getLoginPanel();
+		});
+	[/#if]
+});
+</script>
+<div class="header-box-bg">
+	<div class="header-box">
+		<div class="header-box-logo">
+			<div class="logo"><span>乐喔网 创造我们的生活..</span></div>
+		</div> 
+		<div class="header-box-txtlink">
+			<div class="now_site_block">
+				<span class="province">[贵阳市]</span>
+				<span class="school">贵州大学 花溪区</span>
+				<span>隔壁学校</span> 
+			</div>
+		</div>
+		<div class="header-box-user1">
+				[#if user??]
+					<a href="${base}/activity/save.jspx?cityid=3" class="pubhref">我来发起！</a>
+				[#else]
+					<span id="qqLoginBtn" ></span>
+					<script type="text/javascript">
+					    QC.Login({
+					       btnId:"qqLoginBtn"	//插入按钮的节点id
+						});  
+					</script> 	
+					<!-- <a href="${base}/connect/qq/login" class="qq_login" title="使用qq登录"></a> -->
+				[/#if]
+		</div>
+		[#if user??]
+		<div class="header-box-pastbtn">
+			<div class="login_button">
+				[#if user.userExt.userImg??]
+					<img src="${base}${user.getUserCornerImg()!}" onerror="this.src='/${res}/images/user_pic/user_pic_big.gif'" width="48" height="48" />
+				[#else]
+					<img src="/${res}/images/user_pic_big.gif" />
+				[/#if]
+				<ul>
+					<li>
+						<span><a href="${base}/member/index.jspx">${user.username}</a>&nbsp;${user.group.name!}</span>
+					</li>
+					<li>
+						<div class="header-box-pastbtn">
+							[#if user.teamsendFlag??]
+								[#if user.teamsendFlag gt 0]
+									<a class="sy-btn2 message" title="你的消息" ></a> 
+									<div class="message_wrap">
+										<div class="message_detail">
+											<img src="/${res}/image/loading.gif" class="loading" />
+										</div>
+									</div>
+								[/#if]
+							[/#if]
+							<a class="sy-btn3" title="信息设置" href="${base}/member/profile.jspx"></a>
+							<a class="sy-btn4" title="个人中心" href="${base}/member/index.jspx"></a> 
+							[#if user.addfriendFlag??]
+								[#if user.addfriendFlag gt 0]
+									<a class="sy-btn2 friendmessage" title="好友申请" ></a> 
+									<div class="friendmessage_wrap"> 
+										<img src="/${res}/image/loading.gif" class="loading"  /> 
+									</div>
+								[/#if]
+							[/#if]
+							<a class="sy-btn5" title="退出登录" href="logout.jspx?returnUrl=/"></a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>				
+		[#else]
+		<div class="login_box">
+			<a href="${base}/login.jspx" class="sy-btnuser1"></a><a href="${base}/register.jspx" class="sy-btnuser2"></a>
+		</div>
+		[/#if]
+		
+	</div>
+</div>
+

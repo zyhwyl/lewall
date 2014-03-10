@@ -1,0 +1,130 @@
+[#-- 
+--]
+
+<script>
+var nowScholl="";
+$(function(){  
+	//初始化选项
+	init();
+	generateSelect("province","city",true);
+	generateSelect("city","districk",false);
+	generateSelect("districk","school",false); 
+
+	//弹出选择学校框
+	$(".select_school").click(function(event){
+		//阻止事件冒泡
+		event.stopPropagation();
+		
+		//先关闭其他的选项框
+		$(".itemwrap").hide();
+		
+		$(".school_wrap").show();
+	});
+	//选择学校
+	$(".school").click(function(event){
+		//阻止事件冒泡
+		event.stopPropagation();
+		
+		$(this).parent().siblings().html("<span>"+$(this).text()+"</span>");
+		$(this).parent().hide();
+		nowScholl=$(this).attr("id");
+		$("#schoolId").val($(this).attr("id").substring(6));
+	});
+	function init(){
+		[#list tag_list as province]
+			$(getSelectItemHtml("province","province${province.id!}","${province.provinceName!}","country")).appendTo(".province_wrap");
+			[#list province.activityCities as city]
+				[#if city??]
+				$(getSelectItemHtml("city","city${city.id!}","${city.cityName!}","province${province.id!}")).appendTo(".city_wrap");
+				[#list city.activityDistricks as districk]
+					[#if districk??]
+					$(getSelectItemHtml("districk","districk${districk.id!}","${districk.districkName!}","city${city.id!}")).appendTo(".districk_wrap");				
+					[#list districk.activitySchools as school]
+						[#if school??] 
+							$(getSelectItemHtml("school","school${school.id!}","${school.scName!}","districk${districk.id!}")).appendTo(".school_wrap");				
+						[/#if]
+					[/#list]
+					[/#if]
+				[/#list]
+				[/#if]		
+			[/#list]
+		[/#list]
+	}
+	
+	function generateSelect(field,subField,isShowAll){
+		//弹出选择框
+		$(".select_"+field).click(function(event){ 
+			//阻止事件冒泡
+			event.stopPropagation();
+
+			//先关闭其他的选项框
+			$(".itemwrap").hide();
+			
+			$("."+field+"_wrap").show();
+			if(isShowAll==true){
+				$("."+field).show();
+			}
+		});
+		
+		//选择字段
+		$("."+field).click(function(event){
+			//阻止事件冒泡
+			event.stopPropagation();
+			
+			$(this).parent().hide();
+			$(this).parent().siblings().html("<span>"+$(this).text()+"</span><img src='/${res}/image/select_arrow.jpg' />");
+			//弹出子选择框
+			$(".select_"+subField).show();
+			var tmp=$(this);  
+			$("."+subField).each(function(){  
+				if(tmp.attr("id")==$(this).attr("lang")){
+					$(this).show();
+				}else{
+					$(this).hide();
+				}
+			});
+		});
+	}
+	
+	//获取一个选项的HTML
+	function getSelectItemHtml(style,id,text,name){
+		return "<div class='"+style+" hidden item' id='"+id+"' lang='"+name+"' >"+text+"</div>";
+	}
+	
+	$("body").click(function(){
+		$(".itemwrap").hide();
+	});
+});
+</script>
+<div class="outer_wrap">
+	<div class="select_wrap select_province" >
+		<span>选择省份</span>
+		<img src="/${res}/image/select_arrow.jpg" />
+	</div>
+	<div class="province_wrap itemwrap hidden"></div>
+</div>
+<div class="outer_wrap">
+	<div class="select_wrap hidden select_city" ><span>选择城市</span><img src="/${res}/image/select_arrow.jpg" /></div>
+	<div class="city_wrap itemwrap hidden"></div>
+</div>	
+<div class="outer_wrap">
+	<div class="select_wrap hidden select_districk" ><span>选择地区</span><img src="/${res}/image/select_arrow.jpg" /></div>
+	<div class="districk_wrap itemwrap hidden"></div>
+</div>
+<div class="outer_wrap">
+	<div class="select_wrap hidden select_school" ><span>选择学校</span><img src="/${res}/image/select_arrow.jpg" /></div>
+	<div class="school_wrap itemwrap hidden"></div>
+</div>
+	<input type="hidden" value="" class="input2 required" name="schoolId" id="schoolId" />
+<style>
+.select_wrap{width:160px;height:33px;border:solid 1px silver;background:#fff;	
+	float:left;text-align:center;cursor:pointer;margin-left:5px;}
+.select_wrap span{font-family:微软雅黑;position:relative;left:-15px;top:6px;}
+.select_wrap img{float:right;+*margin-top:-20px;} 
+.hidden{display:none;} 
+.outer_wrap{float:left;}
+.itemwrap{position:absolute;margin:34px 0 0 5px;+*margin:34px 0 0 -162px;border:solid 1px silver;width:160px; float:left;background:#fff;z-index:99999;}
+.item{padding:5px;}
+.item:hover{background:#ddd;}
+
+</style>

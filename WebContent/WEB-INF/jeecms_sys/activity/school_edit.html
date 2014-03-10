@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+
+</script>
+</head>
+<body>
+<@p.form id="jvForm" action="school_update.do" labelWidth="10" name="school">
+<input type="hidden" value="${school.id!}" name="id" />
+<@p.text class="required" maxlength="150" size="" value="${school.scName!}" name="scName" label="学校名称"/>
+<td class="pn-flabel pn-flabel-h">选择地区</td><td class="pn-fcontent">
+<select name="districkid">
+	<#list list as districk>
+		<option <#if school.districk.id=districk.id>selected="selected"</#if> value="${districk.id}">${districk.districkName!}</option>
+	</#list>
+</select>
+</td>
+</tr><tr>
+<@p.td colspan="2"> 
+<@p.submit code="global.submit"/> 
+</@p.td>
+
+</@p.form>
+</body>
+</html>

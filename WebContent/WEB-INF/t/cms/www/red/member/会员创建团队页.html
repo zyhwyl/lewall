@@ -1,0 +1,414 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>会员信息修改 - ${site.name} - Powered by JEECMS</title>
+<link href="${resSys}/front.css" rel="stylesheet" type="text/css"/>  
+<link rel="stylesheet" type="text/css" href="../../${res}/css/member.css" />
+<script src="${base}/thirdparty/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<script src="/${res}/js/jquery-1.8.3.js"></script>
+<script src="/${res}/ui/jquery.ui.position.js"></script>
+<script src="/${res}/ui/jquery.ui.core.js"></script>
+<script src="/${res}/ui/jquery.ui.widget.js"></script>
+<script src="/${res}/ui/jquery.ui.mouse.js"></script>
+<script src="/${res}/ui/jquery.ui.draggable.js"></script>
+<script src="/${res}/ui/jquery.ui.droppable.js"></script>
+<script src="/${res}/ui/jquery.ui.resizable.js"></script>
+<script src="/${res}/ui/jquery.ui.dialog.js"></script>
+<link href="${base}/res/common/css/theme.css" rel="stylesheet" type="text/css"/>
+<script src="/${res}/kindeditor-all.js"></script>
+<link rel="stylesheet" href="/${res}/themes/default/default.css" />
+
+<script type="text/javascript">
+var userids="";
+var canpubs="";
+var dutys="";
+
+$(function() { 
+	initUserPanel();
+	
+	$("#teamname").keyup(function(event){ 
+		$(".team_name").text($(this).val());
+	});
+	$("#desc_input").keyup(function(event){ 
+		$(".team_desc").text($(this).val());
+	});
+	//添加标签
+	$("#tagadd").click(function(){
+		var taghtml=getTagDiv($("#tag_input").val());
+		if($("#tag_input").val()!=""&&$("#tag_input").val()!="请填写标签名称"){
+			$(taghtml).appendTo("#tagblock").animate({"opacity":"1"},1500);
+			$("#tag_input").val("请填写标签名称");
+			$("#tag_input").css("color","silver");
+			refreshParam();
+		}else{
+			alert("请输入标签名称！");
+			$("#tag_input").focus();
+		}
+	})
+	//清空标签文字
+	$("#tag_input").focus(function(){
+		if($(this).val()=="请填写标签名称"){
+			$(this).val("");
+			$(this).css({"color":"black"});
+		}
+	});
+	//得到标签函数
+	function getTagDiv(tagname){
+		//判断标签是否添加过
+		var flag=1;
+	
+		$(".tagdiv").each(function(){
+			if($(this).text()==tagname){
+				alert("标签已经添加过了！");
+				flag=0;
+				return;
+			}
+		});
+		if(flag==0){
+			$("#tag_input").focus();
+			return;
+		}
+		return "<span class='tagdiv'>"+tagname+" x</span>";
+	}
+	
+	//删除标签
+	$(".tagdiv").live("click", function(){ 
+  		$(this).remove();
+  		refreshParam();
+	}); 
+	
+	//刷新图片和标签
+	function refreshParam(){
+		tags="";
+		//刷新标签
+		$(".tagdiv").each(function(){
+			if($(this).text()!=""){
+				tags=tags+$(this).text().substring(0,$(this).text().length-2)+",";
+			}
+		});
+		if(tags!=""){
+			$("#tags").val(tags.substring(0,tags.length-1));
+		}
+	}
+	
+	//搜索用户
+	$(".user_search").focus(function(){
+		$(this).val("").css("color","#333");
+	});
+	$("#usersearch").click(function(){
+		if($.trim($("#username").val())==""||$("#username").val()=="请输入用户姓名.."){
+			alert("请输入要搜寻的用户的用户名！");
+			$("#username").focus();
+			return;
+		}
+		//获取数据
+		$("<img src='/${res}/image/loading.gif' class='loadingimg' />").appendTo(".search_result").fadeIn(function(){
+			$.ajax({
+			    type:"GET",
+			    url:"${base}/member/usersearch.jspx",
+			    data:{username:encodeURI($("#username").val()),schoolId:1},
+			    beforeSend: function(){
+			    },
+			    success:function(json){	 
+			    	if(json.error==1){
+	    				alert("未找到相关用户");
+	    			}
+			    	if(json.error==0){
+			    		alert("请登录");
+			    	}
+	    			if(json!=null&&json.error==null){
+	    				
+	    				for(var i=0;i<json.length;i++){
+	    					$(getUserPanel("userid"+json[i].userid,json[i].username,"${base}"+json[i].userimg)).appendTo("#search_result");
+	    				}
+	    			}
+	    			$(".loadingimg").remove();
+	    			initUserPanel();
+			    },
+			    dataType:"json",
+			    async:false,
+			    error:function(){
+			    	alert("error:程序异常！！");
+			    },
+			    contentType: "application/x-www-form-urlencoded; charset=utf-8"
+			}); 
+		});
+	});
+	//得到用户面板
+	function getUserPanel(userid,username,userimg){
+		var html="<div class='user_panel' id='"+userid+"'>";
+		html+="<img src='"+userimg+"' width='48' height='48' />";
+		html+="<span>"+decodeURI(username)+"</span>";
+		html+="</div>";
+		return html;
+	}
+	//拖动效果
+	var $search_result= $( "#search_result" ),
+	$add_user_panel = $( ".team_panel" );
+	
+	initUserPanel();
+	
+	$add_user_panel.droppable({
+		accept: ".user_panel",
+		activeClass: "ui-state-highlight",
+		drop: function(event,ui) {
+			addUser(ui.draggable);
+		}
+	});
+	
+	//加入用户
+	function addUser($item) {
+			$item.fadeOut(function() {
+				var flag=0;
+				$(".team_member_panel .select_user_panel").each(function(){
+					if($(this).attr("id")==$item.attr("id")){
+						alert("用户已经添加过了！");
+						flag=1;
+						return;
+					}
+				});
+				if(flag==1){
+					return;
+				}
+				var html='';
+				html+='<div class="select_user_panel" id="'+$item.attr("id")+'" lang="'+$item.attr("lang")+'">';
+				html+='<ul><li><img src="'+$item.find("img").attr("src")+'" width="48" height="48"/>';
+				html+='<span class="duty_input">队内职务:<input type="text" style="width:40px;" name="duty" id="duty'+$item.attr("id")+'" />(可不填)</span><span class="pub_input">允许团发布:<input type="radio" name="'+$item.attr("id")+'" value="1" />是&nbsp;<input type="radio" name="'+$item.attr("id")+'" value="0" checked="checked"/>否</span></li>';
+				html+='<li><span>'+$item.find("span").text();
+				html+='</span><img width="10" height="10" src="/${res}/image/action_delete.gif" class="uploaddelete"/></li></ul></div>';
+				
+				$(html).appendTo(".team_member_panel").fadeIn();
+				$item.remove();
+			});
+	}
+	//删除用户
+	$(".uploaddelete").live("click",function(){
+		var $olddiv=$(this).parent().parent().parent();
+		var userid=$olddiv.attr("id");
+		var userimg=$(this).parent().siblings("li").children("img").attr("src");
+		var username=$(this).siblings("span").text();
+		
+		$olddiv.fadeOut(function(){ 
+			$(getUserPanel(userid,username,userimg)).appendTo("#search_result").fadeIn();
+			initUserPanel();
+			$olddiv.remove();
+		});
+	}); 
+	//初始化用户panel
+	function initUserPanel(){
+		$( ".user_panel", $search_result ).draggable({
+			cancel: "a.ui-icon", // clicking an icon won't initiate dragging
+			revert: "invalid", // when not dropped, the item will revert back to its initial position
+			containment: $( "#demo-frame" ).length ? "#demo-frame" : "document", // stick to demo-frame if present
+			helper: "clone",
+			cursor: "move"
+		});
+	}
+	//获取成员数据
+	function getMemberData(){
+		userids="";
+		canpubs="";
+		dutys="";
+		
+		$(".select_user_panel").each(function(){   
+			userids=userids+$(this).attr("id").substring(6)+",";
+			if($.trim($("#duty"+$(this).attr("id")).val())==""){
+				dutys=dutys+"无"+",";
+			}else{
+				dutys=dutys+$("#duty"+$(this).attr("id")).val()+",";
+			}
+			canpubs=canpubs+$(":radio[name='"+$(this).attr("id")+"']:checked").val()+",";
+		});
+		userids=userids.substring(0,userids.length-1);
+		dutys=dutys.substring(0,dutys.length-1);
+		canpubs=canpubs.substring(0,canpubs.length-1);
+
+		$("#userids").val(userids);
+		$("#dutys").val(dutys);
+		$("#canpubs").val(canpubs);
+	}
+	var teamname_flag=0;
+	//提交表单
+	$("#savebtn").click(function(){
+		getMemberData(); 
+		//数据验证
+		if($.trim($("#teamname").val())==""){
+			alert("团队名称不能为空！");
+			$("#teamname").focus();
+			return;
+		}
+		if($("input[name='tags']").val()==""){
+			alert("至少为你们团队加入一个标签！");
+			$("#tag_input").focus();
+			return;
+		}
+		if($("#uploadImgPath1").val()==""){
+			alert("请上传一个你们团队LOGO!");
+			return;
+		}
+		if($.trim($("#desc_input").val())==""){
+			alert("写下你们的口号，让别人认识你们！");
+			$("#desc_input").focus();
+			return;
+		} 
+		if($.trim($("#createduty").val())==""){
+			alert("你的职务必填！");
+			$("#createduty").focus();
+			return;
+		} 
+		//是否添加成员
+		if($(".team_member_panel").html()==""){
+			alert("你的团队至少添加一个团队成员！");
+			return;
+		} 
+		
+		if(teamname_flag==1){
+			alert("团队名已存在，请重新输入！");
+			return;
+		}
+		
+		$("#jvForm").submit();
+	});
+	
+	//验证团队名是否存在
+	$("#teamname").blur(function(){
+		if($.trim($(this).val())==""){
+			$("#vali_name").text("团队名称不能为空！");
+		}else{
+			var teamName=$(this).val();
+			$("<img src='/${res}/image/loading.gif' class='loadingimg' />").appendTo("#vali_name").fadeIn(function(){
+				$.post("valiteamname.jspx",{"teamName":encodeURI(teamName)},function(data){
+					if(data==0){
+						alert("请先登录！ ")
+					}else if(data==1){
+						$("#vali_name").html("对不起，团队名称已存在，请重新输入！");
+						teamname_flag=1;
+					}else{
+						$("#vali_name").html("<img src='/${res}/image/ok.gif' />");
+						teamname_flag=0;
+					}
+				});
+			});
+		}
+	});
+});
+
+KindEditor.ready(function(K) {
+	var editor = K.editor({
+		allowFileManager : true,
+		uploadJson : '${base}/member/team_photo_upload_image.jspx'
+	});
+	
+	K('#upload-file').click(function() {
+		editor.loadPlugin('image', function() {
+			editor.plugin.imageDialog({
+				showRemote : false,
+				imageUrl : K('#uploadImgPath1').val(),
+				clickFn : function(url, title, width, height, border, align) {
+					K('#preImg1').attr("src",url); 
+					K('#uploadImgPath1').val(url.replace("/cms",""));   
+					editor.hideDialog();
+				}
+			});
+		});
+	});
+});
+</script>
+</head>
+
+<body>
+[#include "会员中心页_页头.html"/]
+[#include "会员中心页_导航.html"/]
+<div class="container">
+	<div class="member_panel">
+		<div class="member_top"><span>创建我们的团队...</span></div>
+		<div class="content">
+	    <form id="jvForm" action="createteam.jspx" method="post" name="">
+	    	<div class="add_team_left"> 
+	    		<input type="hidden" name="tags" id="tags" />
+	    		<input type="hidden" name="userids" id="userids" />
+	    		<input type="hidden" name="canpubs" id="canpubs" />
+	    		<input type="hidden" name="dutys" id="dutys" />
+		    	<ul class="teamform">
+		    		<li><div class="title_wrap"><span>团队名称：</span></div><input type="text" name="teamName" id="teamname" />&nbsp;&nbsp;<b id="vali_name"></b></li>
+		    		<li><div class="title_wrap"><span>团队标签：</span></div><input type="text" id="tag_input" value="请填写标签名称" style="color:#ccc" /><input type="button" class="add_tag_btn" id="tagadd"/></li>
+		    		<li><div class="title_wrap"><span>团队LOGO：</span></div>
+			    		<img id="preImg1" alt="预览" style="background-color:#ccc;border:1px solid #333;float:left;" src=""/>
+				      	<div style="padding:10px;float:left;">
+							<input style="padding:0;border:none;font-size:12px;" type="button" value="上传logo" id="upload-file" class="upload-file"/>
+							<input id="uploadImgPath1" name="teamlogo" style="width:220px" type="hidden"/>
+						</div>
+						<div style="clear:both;"></div>
+		    		</li>
+		    		
+		    		<li><div class="title_wrap"><span>团队口号：</span></div><textarea id="desc_input" rows="3" class="require" name="teamdesc"></textarea>&nbsp;&nbsp;<b></b></li>
+		    		<li><div class="title_wrap"><span>你的职务：</span></div><input type="text" id="createduty" name="createuserduty"  />（如：创建人、团长之类的）</li>
+		    		<li><div class="title_wrap"><span>允许申请：</span></div><input type="radio" value="1" name="applyAllow" style="border:none;" checked="checked" />允许申请加入<input style="border:none;" type="radio" value="0" name="applyAllow" />禁止</li>
+		    		<li><div class="title_wrap"><span>验证码：</span></div><input type="text" id="captcha" style="width:50px;" name="captcha"  />&nbsp;&nbsp;<img class="captcha" src="${base}/captcha.svl" onclick="this.src='${base}/captcha.svl?d='+new Date()*1" width="100" height="35"/></li>
+		    		<li>[#if error??]<span class="error">${error!}</span>[/#if]</li>
+		    	</ul>
+		    	<div class="team_panel">
+		    		<div class="team_name" >
+		    		</div>
+		    		<div class="team_member" id="team_member">
+		    			<div class="team_member_panel">
+		    			</div>
+		    			<div style="clear:both;"></div>
+		    		</div>
+		    		<div class="team_tag" id="tagblock">
+		    		</div>
+		    		<div style="clear:both;"></div>
+		    		<div class="team_desc" >
+		    		</div>
+		    		<input type="button" value="保存" id="savebtn"  style="padding:0;border:none;" class="add"/>
+		    		
+		    	</div>
+		    	<div class="create_tips">
+		    		注：<b>添加成员</b>将<b>右侧用户</b>拖动到左边的面板上即可。<br/>
+		    		团队创建后，你可以点亮你的<b>团队标识</b>，每个标识具有自己的属性，如<b>战队</b>可以接受别人的<b>挑战</b>等
+		    	</div>
+	    	</div>
+	    	<div style="clear:both;"></div>
+		</form>
+		</div>	
+		<div class="bottom"></div>
+	</div>
+	<div class="add_team_right">
+		<div class="friend_search">
+   			<div class="top"><span>用户搜索</span></div>
+  			<ul>
+  				<li>&nbsp;&nbsp;&nbsp;&nbsp;性别：<Input type="radio" name="sex" value="0" checked="checked"/>男<Input type="radio" name="sex" value="1" />女</li>
+  				<li><Input type="text" name="username" id="username" value="请输入用户姓名.." class="user_search" /><input type="button" value=" " id="usersearch" /></li>
+  			</ul>			
+	   	</div>
+	   	<div class="search_result" id="search_result">
+	   		 
+	   	</div>
+	   	<div style="clear:both;"></div>
+	   	<br />
+	   	<br />
+   		<div class="friend_list">
+   			<div class="top"><span>好友列表</span></div>
+   			[#if user??]
+   				[@friendlist userid="${user.id}"]
+   					[#if error??]
+   						&nbsp;&nbsp;&nbsp;&nbsp;${error}
+   					[/#if]
+   					[#if userList??]
+   						[#list userList as user]
+   							<div class='user_panel' id='friend${user.id}'>
+								<img src='${base}${user.getUserCornerImg()!}' width='48' height='48' />
+								<span>${user.username!}</span>
+							</div>
+   						[/#list]
+   					[/#if]
+   				[/@friendlist]
+   			[/#if]
+   		</div>
+   	</div>
+  </div>
+  <div style="clear:both"></div>
+
+</body>
+</html>

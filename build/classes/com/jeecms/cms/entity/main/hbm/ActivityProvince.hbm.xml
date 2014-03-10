@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="ActivityProvince"
+		table="activity_province"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="integer"
+			column="province_id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="ProvinceName"
+			column="province_name"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+		<many-to-one
+			name="Country"
+			column="country_id"
+			class="ActivityCountry"
+			not-null="false"
+		>
+		</many-to-one>
+	
+
+		<set name="ActivityCities" inverse="true">
+			<key column="province_id"/>
+			<one-to-many class="ActivityCity"/>
+		</set>
+
+
+	</class>	
+</hibernate-mapping>

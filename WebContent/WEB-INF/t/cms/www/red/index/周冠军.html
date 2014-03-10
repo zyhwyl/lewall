@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>乐喔网 - lwall.net 周冠军</title>
+<meta http-equiv="keywords" content=""/>
+<meta http-equiv="description" content=""/>
+
+<script src="/${res}/js/jquery.min.js"></script> 
+<script src="/${res}/js/jquery.lazyload.js"></script>
+<link href="/${res}/css/index.css" rel="stylesheet" type="text/css"/>
+<link href="/${res}/css/wall.css" rel="stylesheet" type="text/css"/> 
+
+<script>
+$(function(){
+	//定位右边的围观墙
+	var dWidth=document.body.clientWidth;
+	$(".watch_wall_right").css("left",(dWidth-1024)/2+740);
+	$(".watch_wall_left").css("left",(dWidth-1024)/2);
+	
+	//是否自动显示标识
+	var showFlag=1;
+	
+	$(".detail_watch_people").mouseover(function(){
+		$(".watch_people_say").stop().css("opacity","1");
+		$(this).siblings(".watch_people_say").fadeIn();
+	}).mouseout(function(){
+		$(this).siblings(".watch_people_say").hide(); 
+	});
+	$(".detail_watch_people_right").mouseover(function(){
+		$(".watch_people_say").stop().css("opacity","1");
+		$(this).siblings(".watch_people_say").fadeIn();
+	}).mouseout(function(){
+		$(this).siblings(".watch_people_say").hide();
+	});
+	
+	//定时随机显示某人的评论
+	function showComment(){ 
+		var rand = parseInt(Math.random() * $(".watch_people_say").length); 
+		var i=0;
+		if(showFlag==1){
+			$(".watch_people_say").each(function(){
+				if(i==rand){ 
+					$(this).fadeIn(1500,function(){
+						$(this).fadeOut(3000);
+					});
+				}
+				i++;
+			})
+			i=0;
+		}
+		if($(".watch_people_say").length==1){
+			showFlag=0;
+		}
+	}
+	showComment();
+	var show=setInterval(showComment,4000);
+	
+	//关闭弹出对话框
+	$(".close_dialog").toggle(function(){
+		showFlag=0;
+		$(this).text("开启弹幕");
+	},function(){
+		showFlag=1;
+		$(this).text("关闭弹幕");
+	});
+	
+	//将评论内容进行分行
+	$(".say_body").each(function(){
+		var text=$(this).children("span").html();
+		var commentlist=text.split("|"); 
+		var html="";
+		for(var i=0;i<commentlist.length;i++){ 
+			html+=getCommentPanel(commentlist[i]);
+		}
+		$(this).html(html);
+	});
+	
+	//得到数据列
+	function getCommentPanel(text){
+		var html="";
+		html+="<div>"+text+"</div>";
+		return html;
+	}
+	//评论
+	$(".comment_btn").click(function(){
+		var acid=$(this).parent().attr("id").substring(7); 
+		if($.trim($(this).siblings("textarea").val())==""){
+			alert("请输入你的评论内容！");
+			$(this).siblings().focus();
+			return;
+		}else{
+			var text=$(this).siblings("textarea").val();
+			$.post("${base}/activity/commentsave.jspx",{"acId":acid,"text":text},function(data){
+				if(data=="0"){
+		    		alert("请登录先！");
+		    	}else if(data=="1"){
+		    		alert("活动不存在，或者已经被删除！");
+		    	}else if(data=="2"){
+		    		alert("评论成功")
+		    		window.location.reload(); 
+		    	}else if(data=="3"){
+		    		alert("评论内容为空！");
+		    	}else{
+		    		alert("error:评论失败，程序异常！！");
+		    	}
+			});
+		}
+	});
+	//围观
+	$(".watch_button").click(function(){
+		$.post("${base}/activity/watchsave.jspx",{acId:${activity.id}},function(data){
+			if(data=="0"){
+	    		alert("请先登录！");
+	    	}else if(data=="1"){
+	    		alert("你已经在围观此活动了！！");
+	    	}else if(data=="2"){
+	    		alert("活动不存在，或者已经被删除！");
+	    	}else if(data=="3"){
+	    		$("#activityid${activity.id}").html("<span>已围观</span>").css("color","silver");
+	    	}else{
+	    		alert("error:围观失败，程序异常！！");
+	    	}
+		});
+	});
+})
+
+</script>
+</head>
+<body style="background:url(/${res}/images/goodSB.JPG);background-attachment:fixed;background-position:0 60px;"> 
+	<div style="height:60px;width:100%;"></div>
+	[#include "../include/页头顶栏.html"/]
+	
+	<div class="detail_wrap">
+	[#if error??]
+	${error}
+	[#else]
+		<div class="watch_wall_left"> 
+				[#if activity.watchList??]
+					<div class="detail_watch_panel">
+					[#list activity.watchList as watch]
+						[#if watch.nowPanel=0]
+						<div class="detail_watch_wrap">
+							[#if watch.comment??]
+							<img src="/${res}/image/say_3.png" class="have_say" />
+							<div class="watch_people_say">
+								<div class="say_top"></div>
+								<div class="say_body"><span>${watch.comment.acmUsername!}:&nbsp;${watch.comment.acmText!}</span><div style="clear:both;"></div></div>
+								<div class="say_bottom"></div>	
+							</div>
+							[/#if]
+							<img class="detail_watch_people" src="${base}${watch.awUserimg}" width="38" height="38" onerror="this.src='/${res}/image/memberdefualt.png'"/>
+						</div>
+						[/#if]
+					[/#list]
+					</div>
+				[/#if]
+				[#if activity.commentList??]
+					[#list activity.commentList as comment]
+						<div class="detail_watch_wrap">
+							[#if comment.acmText??]
+							<img src="/${res}/image/say_3.png" class="have_say" />
+							<div class="watch_people_say">
+								<div class="say_top"></div>
+								<div class="say_body"><span>${comment.acmUsername!}:&nbsp;${comment.acmText!}</span><div style="clear:both;"></div></div>
+								<div class="say_bottom"></div>	
+							</div>
+							[/#if]
+							<img class="detail_watch_people" src="${base}${comment.acmUserimg}" width="38" height="38" onerror="this.src='/${res}/image/memberdefualt.png'"/>
+						</div>
+					[/#list]
+				[/#if]
+		</div>
+		<div class="watch_wall_right">
+			 <div class="detail_btn_panel">
+				[#if activity.isWatch=1]
+					<span class="detail_button" style="color:silver;">已围观</span>
+				[#else]
+					<span class="watch_button detail_button" id="activityid${activity.id}">围观</span>
+				[/#if] 
+				[#if activity.isSign=1]
+					<span class="detail_button"  style="color:silver;margin-left:5px;">已参与</span>
+				[#else]
+					<span class="detail_button" onclick="location='${base}/activity/sign.jspx?acId=${activity.id}'" style="margin-left:5px;">参与</span>
+				[/#if]
+				<span class="close_dialog detail_button" style="margin-left:5px;">关闭弹幕</span>
+				<div class="detail_comment_panel" id="comment${activity.id}">
+					<textarea rows="3" class="text_area" cols="23"></textarea>
+					<img src="/${res}/image/Messaging.png" class="comment_btn" />  
+					[#include "../include/表情.html"/]
+				</div>
+			</div>
+			<div style="clear:both;padding:7px 0;"></div>
+				[#if activity.watchList??]
+					[#list activity.watchList as watch]
+						[#if watch.nowPanel=1]
+						<div class="detail_watch_panel_right">
+							[#if watch.comment??]
+							<img src="/${res}/image/say_3.png" class="right_have_say" />
+							<div class="watch_people_say">
+								<div class="say_top"></div>
+								<div class="say_body"><span>${watch.comment.acmUsername!}:&nbsp;${watch.comment.acmText!}</span><div style="clear:both;"></div></div>
+								<div class="say_bottom"></div>	
+							</div>
+							[/#if]
+							<img class="detail_watch_people_right" src="${base}${watch.awUserimg}" width="38" height="38" onerror="this.src='/${res}/image/memberdefualt.png'"/>
+						</div>
+						[/#if]
+					[/#list]
+				[/#if]
+		</div>
+		<div style="width:260px;height:400px;float:left;"></div>
+		<div class="detail_wall" style="padding:0;">
+			 <img src="/${res}/images/goodSB.JPG" width="480" />
+			 <div class="stage">
+			 	<div class="champion_panel">
+			 		
+			 	</div>
+			 	<div class="secend_panel"></div>
+			 	<div class="thrid_panel"></div>
+			 </div>
+			 <div class="detail_txt_panel">
+			 	${champion.acWeekChampionExt.championDesc!}
+			 </div>
+			 <br/>
+			 <div class="detail_img_panel">
+				[#if activity.imgpaths??]
+					[#list activity.imgpaths as img]
+						<img src="${img?replace('//thumb','')}" width="400"/>
+					[/#list]
+				[/#if]
+			 </div>
+			 <div class="detail_txt_panel">
+					${activity.acTxt!}
+					<br/>
+					人数限制：${activity.acSignmax!}人&nbsp;&nbsp;&nbsp;&nbsp;开始时间：${activity.acBegindate!}
+			 </div>
+			 <div class="detail_tag_panel">
+					[#if activity.team??] 
+						<div class="detail_pubuser_panel">
+						[#if activity.team.acUserTeamExt.teamLogo??]
+							<img src="${base}/a${activity.team.acUserTeamExt.teamLogo!}" width="38" height="38" onerror="this.src='/${res}/image/memberdefualt.png'"/>
+						[#else]
+							<img src="/${res}/image/memberdefualt.png" width="38" height="38" />
+						[/#if]
+						${activity.team.teamName!}
+						</div>
+						<span class="tag_box">团队发布</span>
+					[#else]
+						[#if activity.user??]
+						<div class="detail_pubuser_panel">
+						[#if activity.user.userExt.userImg??]
+							<img src="${base}${activity.user.getUserCircleImg()!}" width="38" height="38" onerror="this.src='/${res}/image/memberdefualt.png'"/>
+						[#else]
+							<img src="/${res}/image/memberdefualt.png" width="38" height="38" />
+						[/#if]
+						${activity.user.username!}
+						</div>
+					[/#if]
+					[/#if]
+					
+					[#if activity.tags??]
+					<img src="/${res}/image/tag.png" />
+						[#list activity.tags as tag]
+							<span class="tag_box">${tag.tagName!}</span> 
+						[/#list]
+					[/#if]
+				</div>
+				<div style="clear:both;padding:7px 0;"></div>
+				<div class="detail_contact_panel">
+					联系方式：
+					[#if activity.acIsshow=1]
+						${activity.acContactmethod!}
+					[#else]
+						[#if activity.isSign=1]
+							${activity.acContactmethod!}
+						[#else]
+							参与后可见！
+						[/#if]
+					[/#if]
+				</div>
+				<div class="detail_join_panel">
+					<span style="float:left;">参与的个人或团队：</span><br/>
+					[#if activity.joinList??]
+						[#list activity.joinList as join]
+							[#if join.joinTeam??]
+								<div class="join_team_wrap">
+									<div class="team_flag">团</div>
+									<img src="${base}${join.joinTeam.acUserTeamExt.teamLogo!}" width="60" height="60" onerror="this.src='/${res}/image/memberdefualt.png'"/>
+									${join.joinTeam.teamName!}
+								</div>
+							[#else]
+								<div class="join_member_wrap">
+									<img src="${base}${join.ajUserimg!}" width="60" height="60" onerror="this.src='/${res}/image/memberdefualt.png'"/>
+									${join.ajUsername!}
+								</div>
+							[/#if]
+						[/#list]
+					[/#if]
+				</div>
+				<div style="clear:both;padding:7px 0;"></div>
+				<div class="detail_live_panel"> 
+					<span style="float:left;">进展情况：</span>
+					<br/>
+					<script> 
+						var clock=0;
+					</script>
+					[#assign livelength=activity.liveList?size]
+					[#if livelength>0]
+					<div class="live_time_wrap">
+						<img class="clock" src="/${res}/images/timeline/icon06.gif" />
+						<div class="live_time_line"></div>
+					</div> 
+					<div class="time_wrap">
+						[#list activity.liveList as live]
+							<div class="time_point">
+								<span class="time_font">
+									<b>${live.liveDate[5..9]}</b>
+									<p>${live.liveDate[10..18]}</p>
+								</span>
+								<div style="clear:both;"></div>
+								<img src="/${res}/images/timeline/icon07.gif" class="point" name="${live.id}" />
+								<div class="live_content">
+									&nbsp;${live.liveContent!}
+								</div> 
+							</div>
+						[/#list]
+					</div>
+						[#assign i=0]
+						[#list activity.liveList as live]
+							[#if live.liveImgs??]
+								<div class="live_img_wrap [#if i=0]show[#else]hide[/#if]" name="${live.id}">
+									[#list live.liveImgs?split(",") as liveimg]
+										[#if liveimg=""]
+										[#else]
+										<img style="cursor:pointer;" title="点击查看大图" onclick="window.open('${liveimg?replace("//thumb","")}')" src="${liveimg}" width="228">
+										[/#if]
+									[/#list]
+								</div>
+								[#assign i=i+1]
+							[/#if]
+						[/#list] 
+					[/#if]
+					<script> 
+						if(clock==1){
+							//时钟图片位置有点上来 重新定位他的位置
+							$(".live_time_wrap").css("margin-top","60px");
+							$(".time_point").css("margin-top","60px");
+						}
+						//重新定义时间轴长度
+						var height=0;
+						$(".time_point").each(function(){ 
+							height=height+$(this).height();
+						});
+						height=height*2; 
+						$(".live_time_line").css("height",height+"px");
+						$(".live_img_wrap").css("min-height",height+100+"px");
+						
+						$(".point").click(function(){
+							var id=$(this).attr("name");
+							$(".live_img_wrap").hide().each(function(){
+								if(id==$(this).attr("name")){
+									$(this).fadeIn();
+								}
+							});
+						});
+					</script>
+				</div>
+		</div> 
+	</div>
+	[/#if]
+</body>
+</html>

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="AcUserTeamTag"
+		table="ac_user_team_tag"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="integer"
+			column="tag_id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="TagName"
+			column="tag_name"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+		<property
+			name="TagUserid"
+			column="tag_userid"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="TagCreatedate"
+			column="tag_createdate"
+			type="timestamp"
+			not-null="false"
+			length="19"
+		/>
+		<property
+			name="TagHot"
+			column="tag_hot"
+			type="integer"
+			not-null="false"
+			length="10"
+		/>
+
+
+	</class>	
+</hibernate-mapping>

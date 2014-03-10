@@ -1,0 +1,76 @@
+<form action="${base}/activity/livesave.jspx" method="post" id="liveform" >
+	<div id="J_imageView"></div>
+	<input type="hidden" name="imgpaths" id="imageshidden" />
+	<input type="hidden" name="acId" value="${activity.id}"/>
+	<div class="text_wrap">
+		<textarea id="txt_detail" style="width:405px;overflow:hidden;border:none;" rows="5" class="require" name="livetxt"></textarea>
+	</div>
+	<div class="img_wrap">
+		<div id="J_imageView"></div> 
+		<div class="add_img">
+			<input id="J_selectImage" type="button" class="add_img_btn" />
+			<span>支持批量上传,格式为jpg,png,gif..</span>
+		</div>
+	</div> 
+	<div class="update_btn">
+		<img src="/${res}/images/video.png" title="视频" />
+		<img id="savelive" src="/${res}/images/Save.png" title="保存" />
+	</div> 
+</form>
+<script>
+	clock=1;
+
+	$("#savelive").click(function(){  
+		if($("#imageshidden").val()==""&&$("#txt_detail").val()==""){
+			alert("至少要选张图片，或者输入一些文字！");
+			return;
+		}
+		$("#liveform").submit();
+	});
+	//删除图片
+	$(".uploaddelete").live("click",function(){
+		$(this).parent().remove();
+		//刷新当前imgpath
+		images="";
+		$(".upload_image").each(function(){
+			images+=$(this).attr("src")+",";
+		});
+		$("#imageshidden").val(images);
+	});
+	
+	//鼠标经过时弹出删除按钮
+	$(".uploadimg_panel").live("mouseover",function(){
+		$(this).children().show();
+	});
+	//鼠标离开时关闭删除按钮
+	$(".uploadimg_panel").live("mouseout",function(){
+		$(this).children(".uploaddelete").hide();
+	});
+	KindEditor.ready(function(K){
+		var editor = K.editor({
+			allowFileManager : true,
+			uploadJson : '${base}/kindeidter/o_upload_image.jspx',
+			filterMode:true
+		});
+		K('#J_selectImage').click(function() {
+			editor.loadPlugin('multiimage', function() {
+				editor.plugin.multiImageDialog({
+					clickFn : function(urlList) {
+						var div = K('#J_imageView'); 
+						images=K("#imageshidden").val();
+						K.each(urlList,function(i, data){
+							div.append('<div class="uploadimg_panel"><img src="/${res}/image/action_delete.gif" class="uploaddelete" style="display:none;position:absolute;cursor:pointer;float:left;margin-left:370px;margin-top:5px;_margin-left:180px;" /><img class="upload_image" src="' + data.url.replace("//thumb","") + '" width="400"></div>');
+							//刷新当前imgpath
+							images=images+data.url+",";
+						});
+						
+						if(images!=""){
+							K("#imageshidden").val(images);
+						} 
+						editor.hideDialog();
+					}
+				});
+			});
+		});
+	});
+</script>

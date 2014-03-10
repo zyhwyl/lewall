@@ -1,0 +1,32 @@
+			<!--签到 开始-->
+	        <div class="index-qd">
+	            <div class="index-qd1">
+	           
+	            <table border="0" cellpadding="0" cellspacing="0" align="center">
+	                <tr><td valign="bottom" style="font-size:40px;width:50px;height:50px;text-align:right;">01</td><td>天</td></tr>
+	                <tr>
+		                <td colspan="2" style="letter-spacing:2px;text-align:center;">
+		                	 <script type="text/javascript">
+				            	var myDate = new Date(); 
+					            var str = myDate.toLocaleDateString();  
+				                var Week = ['日','一','二','三','四','五','六'];  
+				                str += ' 星期' + Week[myDate.getDay()]; 
+				                str=str.substring(str.indexOf("年")+1);
+				                document.write(str);
+				            </script>
+		                </td>
+	                </tr>
+	            </table>
+	            </div>
+	            
+	            <div class="index-qd2">
+	            <div class="check_in_float"></div>
+	            <a href="#">
+	            [#if user??]
+					<div class="checkin_btn"><b>[#if user.isCheckinToday=1]已签到&nbsp;&nbsp;&nbsp;&nbsp;[#else]签到抢位置[/#if]</b>[#if user.isCheckinToday=1]<img src='/${res}/image/happy.jpg' />[/#if]</div>	
+				[#else]
+					<div class="checkin_btn"><b>签到抢位置</b></div>
+				[/#if]
+	            </a></div>        
+	        </div>
+	        <!--签到 结束--> 

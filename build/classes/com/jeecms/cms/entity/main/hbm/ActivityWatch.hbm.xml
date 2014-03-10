@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.jeecms.cms.entity.main">
+	<class
+		name="ActivityWatch"
+		table="activity_watch"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="string"
+			column="aw_id"
+		>
+			<generator class="assigned"/>
+		</id>
+
+		<property
+			name="AwWatchtime"
+			column="aw_watchtime"
+			type="date"
+			not-null="false"
+		/>
+		<property
+			name="awActivityid"
+			column="aw_activityid"
+			type="integer"
+			not-null="false"
+			length="11"
+		/>
+		<property
+			name="awUserid"
+			column="aw_userid"
+			type="integer"
+			not-null="false"
+			length="11"
+		/>
+		<property
+			name="awUsername"
+			column="aw_username"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+		<property
+			name="awUserimg"
+			column="aw_userimg"
+			type="string"
+			not-null="false"
+			length="200"
+		/>
+	</class>	
+</hibernate-mapping>
